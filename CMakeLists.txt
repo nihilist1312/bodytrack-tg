@@ -19,3 +19,11 @@ target_include_directories(bodytrack-tg PRIVATE include)
 find_package(nlohmann_json CONFIG REQUIRED)
 
 target_link_libraries(bodytrack-tg PRIVATE nlohmann_json::nlohmann_json)
+
+find_package(SQLite3 REQUIRED)
+find_package(SQLiteCpp CONFIG REQUIRED)
+
+target_link_libraries(bodytrack-tg PRIVATE
+    SQLiteCpp
+    SQLite3::SQLite3
+)

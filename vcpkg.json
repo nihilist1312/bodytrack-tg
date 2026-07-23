@@ -2,6 +2,9 @@
   "name": "bodytrack-tg",
   "version": "0.1.0",
   "dependencies": [
-    "tgbot-cpp"
+    "tgbot-cpp",
+    "sqlite3",
+    "nlohmann-json",
+    "sqlitecpp"
   ]
 }
