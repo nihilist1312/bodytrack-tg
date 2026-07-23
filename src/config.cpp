@@ -3,10 +3,6 @@
 #include <cstdlib>
 #include <stdexcept>
 
-struct Config {
-    std::string botToken;
-};
-
 Config loadConfig() {
     Config config;
     // Load the bot token from an environment variable

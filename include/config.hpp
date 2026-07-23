@@ -2,6 +2,8 @@
 
 #include <string>
 
-struct Config;
+struct Config {
+    std::string botToken;
+};
 
 Config loadConfig();
