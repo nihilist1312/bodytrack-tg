@@ -126,29 +126,29 @@ Database::Database(const std::string& db_path = "data/bodytrack.db") : db(db_pat
 }
 
 // getters
-BodyMetrics Database::getLastBodyMetrics(int64_t user_id) const {
+std::optional<BodyMetrics> Database::getLastBodyMetrics(int64_t user_id) const {
     SQLite::Statement query(db, SQLQuery::getLastBodyMetrics);
     query.bind(1, user_id);
 
     if (query.executeStep()) {
         return getBodyMetricsFromRow(query);
     } else {
-        throw std::runtime_error("No body metrics found for user");
+        return;
     }
 }
 
-BodyMetrics Database::getBodyMetricsById(int64_t id) const {
+std::optional<BodyMetrics> Database::getBodyMetricsById(int64_t id) const {
     SQLite::Statement query(db, SQLQuery::getBodyMetricsById);
     query.bind(1, id);
 
     if (query.executeStep()) {
         return getBodyMetricsFromRow(query);
     } else {
-        throw std::runtime_error("Body metrics not found for the given ID");
+        return;
     }
 }
 
-BodyMetrics Database::getBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) const {
+std::optional<BodyMetrics> Database::getBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) const {
     SQLite::Statement query(db, SQLQuery::getBodyMetricsByUserIdAndDate);
     query.bind(1, user_id);
     query.bind(2, date);
@@ -156,7 +156,7 @@ BodyMetrics Database::getBodyMetricsByUserIdAndDate(int64_t user_id, const std::
     if (query.executeStep()) {
         return getBodyMetricsFromRow(query);
     } else {
-        throw std::runtime_error("Body metrics not found for the given user ID and date");
+        return;
     }
 }
 
@@ -172,7 +172,7 @@ std::vector<BodyMetrics> Database::getBodyMetricsHistory(int64_t user_id) const 
     return history;
 }
 
-UserData Database::getUserData(int64_t user_id) const {
+std::optional<UserData> Database::getUserData(int64_t user_id) const {
     SQLite::Statement query(db, SQLQuery::getUserData);
     query.bind(1, user_id);
 
@@ -180,12 +180,12 @@ UserData Database::getUserData(int64_t user_id) const {
         UserData user_data = getUserDataFromRow(query);
         return user_data;
     } else {
-        throw std::runtime_error("User not found");
+        return;
     }
 }
 
 // modifiers
-void Database::addUser(int64_t user_id, const UserData& user_data) {
+bool Database::addUser(int64_t user_id, const UserData& user_data) {
     SQLite::Statement query(db, SQLQuery::addUser);
     query.bind(1, user_id);
     query.bind(2, user_data.user_name);
@@ -193,53 +193,66 @@ void Database::addUser(int64_t user_id, const UserData& user_data) {
     query.bind(4, static_cast<int>(user_data.sex));
 
     query.exec();
+
+    return db.getChanges() == 1;
 }
 
-void Database::addBodyMetrics(const BodyMetrics& body_metrics) {
+bool Database::addBodyMetrics(const BodyMetrics& body_metrics) {
     SQLite::Statement query(db, SQLQuery::addBodyMetrics);
     bindBodyMetricsToStatement(query, body_metrics);
     query.exec();
+
+    return db.getChanges() == 1;
 }
 
-void Database::editUserData(int64_t user_id, const UserData& user_data) {
+bool Database::editUserData(int64_t user_id, const UserData& user_data) {
     SQLite::Statement query(db, SQLQuery::editUserData);
     query.bind(1, user_data.user_name);
     query.bind(2, user_data.age);
     query.bind(3, static_cast<int>(user_data.sex));
     query.bind(4, user_id);
     query.exec();
+
+    return db.getChanges() == 1;
 }
 
-void Database::editBodyMetricsById(int64_t id, const BodyMetrics& body_metrics) {
+bool Database::editBodyMetricsById(int64_t id, const BodyMetrics& body_metrics) {
     SQLite::Statement query(db, SQLQuery::editBodyMetricsById);
     bindBodyMetricsToStatement(query, body_metrics);
     query.bind(22, id); // Bind the ID for the WHERE clause
     query.exec();
+
+    return db.getChanges() == 1;
 }
 
-void Database::editBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date, const BodyMetrics& body_metrics) {
+bool Database::editBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date, const BodyMetrics& body_metrics) {
     SQLite::Statement query(db, SQLQuery::editBodyMetricsByUserIdAndDate);
     bindBodyMetricsToStatement(query, body_metrics);
     query.bind(22, user_id); // Bind the user_id for the WHERE clause
     query.bind(23, date);    // Bind the date for the WHERE clause
     query.exec();
+
+    return db.getChanges() == 1;
 }
 
-void Database::deleteBodyMetricsById(int64_t id) {
+bool Database::deleteBodyMetricsById(int64_t id) {
     SQLite::Statement query(db, SQLQuery::deleteBodyMetricsById);
     query.bind(1, id);
     query.exec();
+    return db.getChanges() == 1;
 }
 
-void Database::deleteBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) {
+bool Database::deleteBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) {
     SQLite::Statement query(db, SQLQuery::deleteBodyMetricsByUserIdAndDate);
     query.bind(1, user_id);
     query.bind(2, date);
     query.exec();
+    return db.getChanges() == 1;
 }
 
-void Database::deleteUser(int64_t user_id) {
+bool Database::deleteUser(int64_t user_id) {
     SQLite::Statement query(db, SQLQuery::deleteUser);
     query.bind(1, user_id);
-    query.exec();
+    query.exec();    
+    return db.getChanges() == 1;
 }

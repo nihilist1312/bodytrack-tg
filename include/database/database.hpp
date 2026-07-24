@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <optional>
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
@@ -15,22 +16,22 @@ public:
     ~Database() = default;
 
     // getters
-    BodyMetrics getLastBodyMetrics(int64_t user_id) const;
-    BodyMetrics getBodyMetricsById(int64_t id) const;
-    BodyMetrics getBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) const;
+    std::optional<BodyMetrics> getLastBodyMetrics(int64_t user_id) const;
+    std::optional<BodyMetrics> getBodyMetricsById(int64_t id) const;
+    std::optional<BodyMetrics> getBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) const;
     std::vector<BodyMetrics> getBodyMetricsHistory(int64_t user_id) const;
-    UserData getUserData(int64_t user_id) const;
+    std::optional<UserData> getUserData(int64_t user_id) const;
 
     // modifiers
-    void addUser(int64_t user_id, const UserData& user_data);
-    void addBodyMetrics(const BodyMetrics& body_metrics);
-    void editUserData(int64_t user_id, const UserData& user_data);
+    bool addUser(int64_t user_id, const UserData& user_data);
+    bool addBodyMetrics(const BodyMetrics& body_metrics);
+    bool editUserData(int64_t user_id, const UserData& user_data);
     // edit by id of the record in the Database, not by user id
-    void editBodyMetricsById(int64_t id, const BodyMetrics& body_metrics);
-    void editBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date, const BodyMetrics& body_metrics);
-    void deleteBodyMetricsById(int64_t id);
-    void deleteBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date);
-    void deleteUser(int64_t user_id);
+    bool editBodyMetricsById(int64_t id, const BodyMetrics& body_metrics);
+    bool editBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date, const BodyMetrics& body_metrics);
+    bool deleteBodyMetricsById(int64_t id);
+    bool deleteBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date);
+    bool deleteUser(int64_t user_id);
 
 private:
     SQLite::Database db;
