@@ -9,10 +9,10 @@
 #include "models/body-metrics.hpp"
 #include "models/user-data.hpp"
 
-class DataBase{
+class Database{
 public:
-    DataBase(const std::string& db_path);
-    ~DataBase() = default;
+    Database(const std::string& db_path);
+    ~Database() = default;
 
     // getters
     BodyMetrics getLastBodyMetrics(int64_t user_id) const;
@@ -25,7 +25,7 @@ public:
     void addUser(int64_t user_id, const UserData& user_data);
     void addBodyMetrics(const BodyMetrics& body_metrics);
     void editUserData(int64_t user_id, const UserData& user_data);
-    // edit by id of the record in the database, not by user id
+    // edit by id of the record in the Database, not by user id
     void editBodyMetricsById(int64_t id, const BodyMetrics& body_metrics);
     void editBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date, const BodyMetrics& body_metrics);
     void deleteBodyMetricsById(int64_t id);
