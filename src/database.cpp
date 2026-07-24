@@ -1,0 +1,245 @@
+#include "database/database.hpp"
+#include "database/sql-queries.hpp"
+
+BodyMetrics getBodyMetricsFromRow(const SQLite::Statement& query) {
+    BodyMetrics metrics;
+    metrics.id = query.getColumn("id").getInt64();
+    metrics.user_id = query.getColumn("user_id").getInt64();
+    metrics.date = query.getColumn("date").getString();
+    metrics.weight = query.getColumn("weight").getDouble();
+    metrics.height = query.getColumn("height").getDouble();
+    metrics.age = static_cast<uint8_t>(query.getColumn("age").getInt());
+    metrics.muscleMass = query.getColumn("muscle_mass").getDouble();
+    metrics.bodyFatMass = query.getColumn("body_fat_mass").getDouble();
+
+    if (!query.getColumn("water_mass").isNull()) {
+        metrics.waterMass = query.getColumn("water_mass").getDouble();
+    }
+    if (!query.getColumn("bone_mass").isNull()) {
+        metrics.boneMass = query.getColumn("bone_mass").getDouble();
+    }
+    if (!query.getColumn("visceral_fat").isNull()) {
+        metrics.visceralFat = static_cast<uint8_t>(query.getColumn("visceral_fat").getInt());
+    }
+    if (!query.getColumn("protein_mass").isNull()) {
+        metrics.proteinMass = query.getColumn("protein_mass").getDouble();
+    }
+
+    if (!query.getColumn("muscle_left_arm").isNull()) {
+        SegmentMass muscleSegments;
+        muscleSegments.leftArm = query.getColumn("muscle_left_arm").getDouble();
+        muscleSegments.rightArm = query.getColumn("muscle_right_arm").getDouble();
+        muscleSegments.leftLeg = query.getColumn("muscle_left_leg").getDouble();
+        muscleSegments.rightLeg = query.getColumn("muscle_right_leg").getDouble();
+        muscleSegments.trunk = query.getColumn("muscle_trunk").getDouble();
+        metrics.muscleMassSegments = muscleSegments;
+    }
+
+    if (!query.getColumn("fat_left_arm").isNull()) {
+        SegmentMass fatSegments;
+        fatSegments.leftArm = query.getColumn("fat_left_arm").getDouble();
+        fatSegments.rightArm = query.getColumn("fat_right_arm").getDouble();
+        fatSegments.leftLeg = query.getColumn("fat_left_leg").getDouble();
+        fatSegments.rightLeg = query.getColumn("fat_right_leg").getDouble();
+        fatSegments.trunk = query.getColumn("fat_trunk").getDouble();
+        metrics.fatMassSegments = fatSegments;
+    }
+    return metrics;
+}
+
+UserData getUserDataFromRow(const SQLite::Statement& query) {
+    UserData user_data;
+    user_data.user_id = query.getColumn("user_id").getInt64();
+    user_data.user_name = query.getColumn("user_name").getString();
+    user_data.age = static_cast<uint8_t>(query.getColumn("age").getInt());
+    user_data.sex = static_cast<Sex>(query.getColumn("sex").getInt());
+
+    return user_data;
+}
+
+void bindBodyMetricsToStatement(SQLite::Statement& query, const BodyMetrics& body_metrics) {
+    query.bind(1, body_metrics.user_id);
+    query.bind(2, body_metrics.date);
+    query.bind(3, body_metrics.weight);
+    query.bind(4, body_metrics.height);
+    query.bind(5, body_metrics.age);
+    query.bind(6, body_metrics.muscleMass);
+    query.bind(7, body_metrics.bodyFatMass);
+
+    if (body_metrics.waterMass.has_value()) {
+        query.bind(8, body_metrics.waterMass.value());
+    } else {
+        query.bind(8); // bind NULL
+    }
+
+    if (body_metrics.boneMass.has_value()) {
+        query.bind(9, body_metrics.boneMass.value());
+    } else {
+        query.bind(9); // bind NULL
+    }
+
+    if (body_metrics.visceralFat.has_value()) {
+        query.bind(10, static_cast<int>(body_metrics.visceralFat.value()));
+    } else {
+        query.bind(10); // bind NULL
+    }
+
+    if (body_metrics.proteinMass.has_value()) {
+        query.bind(11, body_metrics.proteinMass.value());
+    } else {
+        query.bind(11); // bind NULL
+    }
+
+    if (body_metrics.muscleMassSegments.has_value()) {
+        const SegmentMass& muscleSegments = body_metrics.muscleMassSegments.value();
+        query.bind(12, muscleSegments.leftArm);
+        query.bind(13, muscleSegments.rightArm);
+        query.bind(14, muscleSegments.leftLeg);
+        query.bind(15, muscleSegments.rightLeg);
+        query.bind(16, muscleSegments.trunk);
+    } else {
+        for (int i = 12; i <= 16; ++i) {
+            query.bind(i); // bind NULL
+        }
+    }
+
+    if (body_metrics.fatMassSegments.has_value()) {
+        const SegmentMass& fatSegments = body_metrics.fatMassSegments.value();
+        query.bind(17, fatSegments.leftArm);
+        query.bind(18, fatSegments.rightArm);
+        query.bind(19, fatSegments.leftLeg);
+        query.bind(20, fatSegments.rightLeg);
+        query.bind(21, fatSegments.trunk);
+    } else {
+        for (int i = 17; i <= 21; ++i) {
+            query.bind(i); // bind NULL
+        }
+    }
+}
+
+DataBase::DataBase(const std::string& db_path = "data/bodytrack.db") : db(db_path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+    // create users table if it doesn't exist
+    db.exec(SQLQuery::createUsersTable);
+
+    // create body_metrics table if it doesn't exist
+    db.exec(SQLQuery::createBodyMetricsTable);
+}
+
+// getters
+BodyMetrics DataBase::getLastBodyMetrics(int64_t user_id) const {
+    SQLite::Statement query(db, SQLQuery::getLastBodyMetrics);
+    query.bind(1, user_id);
+
+    if (query.executeStep()) {
+        return getBodyMetricsFromRow(query);
+    } else {
+        throw std::runtime_error("No body metrics found for user");
+    }
+}
+
+BodyMetrics DataBase::getBodyMetricsById(int64_t id) const {
+    SQLite::Statement query(db, SQLQuery::getBodyMetricsById);
+    query.bind(1, id);
+
+    if (query.executeStep()) {
+        return getBodyMetricsFromRow(query);
+    } else {
+        throw std::runtime_error("Body metrics not found for the given ID");
+    }
+}
+
+BodyMetrics DataBase::getBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) const {
+    SQLite::Statement query(db, SQLQuery::getBodyMetricsByUserIdAndDate);
+    query.bind(1, user_id);
+    query.bind(2, date);
+
+    if (query.executeStep()) {
+        return getBodyMetricsFromRow(query);
+    } else {
+        throw std::runtime_error("Body metrics not found for the given user ID and date");
+    }
+}
+
+std::vector<BodyMetrics> DataBase::getBodyMetricsHistory(int64_t user_id) const {
+    SQLite::Statement query(db, SQLQuery::getBodyMetricsHistory);
+    query.bind(1, user_id);
+
+    std::vector<BodyMetrics> history;
+    while (query.executeStep()) {
+        BodyMetrics metrics = getBodyMetricsFromRow(query);
+        history.push_back(metrics);
+    }
+    return history;
+}
+
+UserData DataBase::getUserData(int64_t user_id) const {
+    SQLite::Statement query(db, SQLQuery::getUserData);
+    query.bind(1, user_id);
+
+    if (query.executeStep()) {
+        UserData user_data = getUserDataFromRow(query);
+        return user_data;
+    } else {
+        throw std::runtime_error("User not found");
+    }
+}
+
+// modifiers
+void DataBase::addUser(int64_t user_id, const UserData& user_data) {
+    SQLite::Statement query(db, SQLQuery::addUser);
+    query.bind(1, user_id);
+    query.bind(2, user_data.user_name);
+    query.bind(3, user_data.age);
+    query.bind(4, static_cast<int>(user_data.sex));
+
+    query.exec();
+}
+
+void DataBase::addBodyMetrics(const BodyMetrics& body_metrics) {
+    SQLite::Statement query(db, SQLQuery::addBodyMetrics);
+    bindBodyMetricsToStatement(query, body_metrics);
+    query.exec();
+}
+
+void DataBase::editUserData(int64_t user_id, const UserData& user_data) {
+    SQLite::Statement query(db, SQLQuery::editUserData);
+    query.bind(1, user_data.user_name);
+    query.bind(2, user_data.age);
+    query.bind(3, static_cast<int>(user_data.sex));
+    query.bind(4, user_id);
+    query.exec();
+}
+
+void DataBase::editBodyMetricsById(int64_t id, const BodyMetrics& body_metrics) {
+    SQLite::Statement query(db, SQLQuery::editBodyMetricsById);
+    bindBodyMetricsToStatement(query, body_metrics);
+    query.bind(22, id); // Bind the ID for the WHERE clause
+    query.exec();
+}
+
+void DataBase::editBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date, const BodyMetrics& body_metrics) {
+    SQLite::Statement query(db, SQLQuery::editBodyMetricsByUserIdAndDate);
+    bindBodyMetricsToStatement(query, body_metrics);
+    query.bind(22, user_id); // Bind the user_id for the WHERE clause
+    query.bind(23, date);    // Bind the date for the WHERE clause
+    query.exec();
+}
+
+void DataBase::deleteBodyMetricsById(int64_t id) {
+    SQLite::Statement query(db, SQLQuery::deleteBodyMetricsById);
+    query.bind(1, id);
+    query.exec();
+}
+
+void DataBase::deleteBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date) {
+    SQLite::Statement query(db, SQLQuery::deleteBodyMetricsByUserIdAndDate);
+    query.bind(1, user_id);
+    query.bind(2, date);
+    query.exec();
+}
+
+void DataBase::deleteUser(int64_t user_id) {
+    SQLite::Statement query(db, SQLQuery::deleteUser);
+    query.bind(1, user_id);
+    query.exec();
+}
