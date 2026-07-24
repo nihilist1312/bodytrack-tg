@@ -35,5 +35,5 @@ struct BodyMetrics {
 
     // segment mass
     std::optional<SegmentMass> muscleMassSegments;
-    std::optional<SegmentMass> bodyFatMassSegments;
+    std::optional<SegmentMass> fatMassSegments;
 };
