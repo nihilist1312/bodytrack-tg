@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <tgbot/tgbot.h>
 #include <unordered_map>
 
 #include "bot/user-states.hpp"
@@ -14,8 +15,8 @@ struct UserSession {
     std::optional<UserData> userData;
     std::optional<BodyMetrics> lastBodyMetrics;
 
-    int64_t chatId;
-    int32_t lastMessageId;
+    int64_t chatId = 0;
+    int32_t lastMessageId = 0;
 };
 
 class UserSessionManager {
@@ -23,6 +24,7 @@ class UserSessionManager {
     UserSessionManager(Database& db) : database(db) {}
 
     UserSession& getSession(int64_t userId);
+    UserSession& get_session(const TgBot::Message::Ptr& message);
     void removeSession(int64_t userId);
 
   private:
