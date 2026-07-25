@@ -1,4 +1,5 @@
+#include "bot/bot.hpp"
+
 int main() {
-    // Your code here
-    return 0;
+    bot_start();
 }
