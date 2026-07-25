@@ -1,34 +1,31 @@
 #include "bot/user-session.hpp"
+#include <cstdint>
 #include <tgbot/types/Message.h>
 
-UserSession& UserSessionManager::getSession(int64_t userId) {
-    auto it = sessions.find(userId);
-    if (it != sessions.end()) {
-        return it->second;
-    } else {
-        // Create a new session for the user if it doesn't exist
-        UserSession newSession;
-        newSession.userData = database.getUserData(userId);
-        sessions[userId] = newSession;
-        return sessions[userId];
+UserSession& UserSessionManager::get_session(int64_t user_id) {
+    auto [it, inserted] = sessions_.try_emplace(user_id);
+    if (inserted) {
+        it->second.user_data = database_.getUserData(user_id);
     }
+
+    return it->second;
 }
 
-void UserSessionManager::removeSession(int64_t userId) {
-    sessions.erase(userId);
+void UserSessionManager::removeSession(int64_t user_id) {
+    sessions_.erase(user_id);
 }
 
 UserSession& UserSessionManager::get_session(const TgBot::Message::Ptr& message) {
     int64_t user_id = message->from->id;
-    UserSession& session = getSession(user_id);
+    UserSession& session = get_session(user_id);
 
-    if (!session.userData.has_value()) {
-        session.currentState = UserStates::RegisrationNeed;
-        session.userData = UserData{};
+    if (!session.user_data) {
+        session.current_state = UserStates::RegistrationNeed;
+        session.user_data.emplace();
+        session.user_data->user_id = message->from->id;
     }
 
-    if (session.chatId == 0)
-        session.chatId = message->chat->id;
+    session.chat_id = message->chat->id;
 
     return session;
 }

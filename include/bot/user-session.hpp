@@ -11,23 +11,23 @@
 #include "models/user-data.hpp"
 
 struct UserSession {
-    UserStates currentState = UserStates::MainMenu;
-    std::optional<UserData> userData;
-    std::optional<BodyMetrics> lastBodyMetrics;
+    UserStates current_state = UserStates::MainMenu;
+    std::optional<UserData> user_data;
+    std::optional<BodyMetrics> last_body_metrics;
 
-    int64_t chatId = 0;
-    int32_t lastMessageId = 0;
+    int64_t chat_id = 0;
+    int32_t last_message_id = 0;
 };
 
 class UserSessionManager {
   public:
-    UserSessionManager(Database& db) : database(db) {}
+    explicit UserSessionManager(Database& db) : database_(db) {}
 
-    UserSession& getSession(int64_t userId);
+    UserSession& get_session(int64_t user_id);
     UserSession& get_session(const TgBot::Message::Ptr& message);
-    void removeSession(int64_t userId);
+    void removeSession(int64_t user_id);
 
   private:
-    std::unordered_map<int64_t, UserSession> sessions;
-    Database& database;
+    std::unordered_map<int64_t, UserSession> sessions_;
+    Database& database_;
 };

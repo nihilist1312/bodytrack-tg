@@ -1,7 +1,7 @@
 #pragma once
 
 enum class UserStates {
-    RegisrationNeed,
+    RegistrationNeed,
 
     // registration
     InputUserName,
