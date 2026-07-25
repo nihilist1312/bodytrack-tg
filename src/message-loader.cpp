@@ -1,21 +1,7 @@
 #include "message-loader.hpp"
-#include <string>
-#include <vector>
-#include <nlohmann/json.hpp>
 #include <fstream>
-
-class MessageLoader {
-    private:
-        nlohmann::json messages;
-
-        void loadMessages();
-    public:
-        std::string getMessage(const std::string& key);
-
-
-        MessageLoader() { loadMessages(); }
-        ~MessageLoader() = default;
-};
+#include <nlohmann/json.hpp>
+#include <string>
 
 void MessageLoader::loadMessages() {
     // Load messages from a JSON file
@@ -24,14 +10,13 @@ void MessageLoader::loadMessages() {
         throw std::runtime_error("Could not open messages.json");
     }
 
-    file >> messages;    
+    file >> messages;
 }
 
-std::string MessageLoader::getMessage(const std::string& key) {
+nlohmann::json MessageLoader::getMessage(const std::string& key) {
     if (messages.contains(key)) {
-        return messages[key].get<std::string>();
+        return messages[key];
     } else {
         throw std::runtime_error("Message key not found: " + key);
     }
-    
 }

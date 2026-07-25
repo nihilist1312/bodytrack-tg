@@ -1,17 +1,18 @@
 #pragma once
 
-#include <string>
 #include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+#include <string>
 
 class MessageLoader {
-    private:
-        nlohmann::json messages;
+  private:
+    nlohmann::json messages;
 
-        void loadMessages();
-    public:
-        std::string getMessage(const std::string& key);
+    void loadMessages();
 
+  public:
+    nlohmann::json getMessage(const std::string& key);
 
-        MessageLoader();
-        ~MessageLoader() = default;
+    MessageLoader();
+    ~MessageLoader() = default;
 };

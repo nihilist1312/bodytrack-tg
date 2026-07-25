@@ -1,12 +1,9 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
+#include <string>
 
-enum class Sex {
-    Male,
-    Female
-};
+enum class Sex { Male, Female };
 
 struct UserData {
     int64_t user_id;
