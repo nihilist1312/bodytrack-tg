@@ -4,6 +4,7 @@
 #include "utils.hpp"
 
 void CommandHandler::handleStartCommand(const TgBot::Message::Ptr& message) {
+    std::cout << "cmdHdl" << message->text << "\n";
     UserSession& session = userSessionManager_.get_session(message);
     if (session.lastMessageId != 0) {
         bot_.getApi().deleteMessage(message->chat->id, session.lastMessageId);
@@ -62,6 +63,6 @@ TgBot::Message::Ptr CommandHandler::sendTextAndKeyboard(
     return ptr;
 }
 
-void CommandHandler::deleteMessage(const TgBot::Message::Ptr& message) {
+void CommandHandler::deleteMessage(const TgBot::Message::Ptr& message) try {
     bot_.getApi().deleteMessage(message->chat->id, message->messageId);
-}
+} catch (const std::exception&) { std::cout << "delete failed\n"; }

@@ -4,6 +4,7 @@
 #include "utils.hpp"
 
 void CallbackHandler::handleCallback(const TgBot::CallbackQuery::Ptr& query) {
+    std::cout << "cbkHdl\n";
     if (query->data.starts_with("reg:")) {
         registrationCallbackHandler(query);
     }
@@ -29,16 +30,21 @@ void CallbackHandler::registrationCallbackHandler(const TgBot::CallbackQuery::Pt
         database_.addUser(query->from->id, session.userData.value());
         session.currentState = UserStates::MainMenu;
     }
+    session.chatId = query->message->chat->id;
+    session.lastMessageId = query->message->messageId;
 }
 
-void CallbackHandler::deleteMessage(const TgBot::Message::Ptr& message) {
+void CallbackHandler::deleteMessage(const TgBot::Message::Ptr& message) try {
     bot_.getApi().deleteMessage(message->chat->id, message->messageId);
-}
+} catch (const std::exception&) { std::cout << "delete failed\n"; }
 
 void CallbackHandler::editTextAndKeyboard(
     const std::string& key, int64_t chat_id, int32_t id,
     const std::vector<std::string>& text_replace,
     const std::unordered_map<size_t, std::vector<std::string>>& button_replace) {
+    if (chat_id == 0 || id == 0) {
+        std::cout << "edit failed\n";
+    }
     auto message_json = messageLoader_.getMessage(key);
     std::string message_text = message_json["text"];
     if (!text_replace.empty()) {

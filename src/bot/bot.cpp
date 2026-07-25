@@ -11,6 +11,8 @@
 #include <tgbot/tgbot.h>
 #include <tgbot/types/Message.h>
 
+#include <iostream>
+
 void bot_start() {
     // init
     static Config config = loadConfig();
@@ -42,5 +44,8 @@ void bot_start() {
     while (true)
         try {
             long_poll.start();
-        } catch (...) { continue; }
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << '\n';
+            continue;
+        }
 }
