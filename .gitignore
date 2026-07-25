@@ -293,3 +293,8 @@ vcpkg_installed/
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,c++,cmake,vcpkg,visualstudiocode,database,git,python
+
+# Added by me
+.clang-format
+.clangd
+.vscode/
