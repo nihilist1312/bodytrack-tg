@@ -20,3 +20,7 @@ nlohmann::json MessageLoader::getMessage(const std::string& key) {
         throw std::runtime_error("Message key not found: " + key);
     }
 }
+
+MessageLoader::MessageLoader() {
+    loadMessages();
+}
