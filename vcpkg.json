@@ -5,6 +5,7 @@
     "tgbot-cpp",
     "sqlite3",
     "nlohmann-json",
-    "sqlitecpp"
+    "sqlitecpp",
+    "spdlog"
   ]
 }

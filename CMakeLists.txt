@@ -27,6 +27,7 @@ add_executable(bodytrack-tg
     src/message-loader.cpp
     src/utils/placeholders.cpp
     src/utils/input_parser.cpp
+    src/logger.cpp
 )
 
 target_link_libraries(bodytrack-tg PRIVATE
@@ -46,3 +47,7 @@ target_link_libraries(bodytrack-tg PRIVATE
     SQLiteCpp
     SQLite3::SQLite3
 )
+
+find_package(spdlog CONFIG REQUIRED)
+
+target_link_libraries(bodytrack-tg PRIVATE spdlog::spdlog)
