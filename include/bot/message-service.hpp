@@ -29,18 +29,18 @@ class MessageService {
     MessageService(TgBot::Bot& bot, MessageLoader& message_loader)
         : bot_(bot), message_loader_(message_loader) {}
 
-    void send_message(UserSession& session,
-                      const MessageTemplateData& message_template);
-    void send_message(UserSession& session, const MessageData& message_data);
-    void edit_message(UserSession& session,
-                      const MessageTemplateData& message_template);
-    void delete_message(const TgBot::Message::Ptr& message);
-    void delete_message(int64_t chat_id, int32_t message_id);
-    void delete_last(UserSession& session);
+    void sendMessage(UserSession& session,
+                     const MessageTemplateData& message_template);
+    void sendMessage(UserSession& session, const MessageData& message_data);
+    void editMessage(UserSession& session,
+                     const MessageTemplateData& message_template);
+    void deleteMessage(const TgBot::Message::Ptr& message);
+    void deleteMessage(int64_t chat_id, int32_t message_id);
+    void deleteLast(UserSession& session);
 
   private:
     TgBot::Bot& bot_;
     MessageLoader& message_loader_;
 
-    MessageData load_message(const MessageTemplateData& message);
+    MessageData loadMessage(const MessageTemplateData& message);
 };

@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <sstream>
 
-std::string normalize_name(const std::string& raw_name) {
+std::string normalizeName(const std::string& raw_name) {
     std::istringstream oss{raw_name};
     std::string res;
     std::string temp;
@@ -15,8 +15,8 @@ std::string normalize_name(const std::string& raw_name) {
     return res;
 }
 
-void replace_by_vector(std::string& text,
-                       const std::vector<std::string>& text_replace) {
+void replaceByVector(std::string& text,
+                     const std::vector<std::string>& text_replace) {
     size_t pos = 0;
     for (const auto& str : text_replace) {
         pos = text.find("{}", pos);
@@ -28,7 +28,7 @@ void replace_by_vector(std::string& text,
     }
 }
 
-int normalize_age(const std::string& text) noexcept {
+int normalizeAge(const std::string& text) noexcept {
     int res = 0;
     auto [ptr, ec] =
         std::from_chars(text.data(), text.data() + text.size(), res);

@@ -9,10 +9,10 @@ class MessageLoader {
   private:
     nlohmann::json messages;
 
-    void load_messages();
+    void loadMessages();
 
   public:
-    nlohmann::json get_message(const std::string& key);
+    nlohmann::json getMessage(const std::string& key);
 
     MessageLoader();
     ~MessageLoader() = default;

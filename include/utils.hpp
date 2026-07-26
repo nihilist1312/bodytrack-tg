@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 
-std::string normalize_name(const std::string& raw_name);
+std::string normalizeName(const std::string& raw_name);
 
 // replace "letter {} letter {} letter {}" by {"a", "b", "c"} to "letter a
 // letter b letter c"
-void replace_by_vector(std::string& text,
-                       const std::vector<std::string>& text_replace);
+void replaceByVector(std::string& text,
+                     const std::vector<std::string>& text_replace);
 
-int normalize_age(const std::string& text) noexcept;
+int normalizeAge(const std::string& text) noexcept;

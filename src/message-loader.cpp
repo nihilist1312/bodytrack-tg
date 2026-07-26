@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-void MessageLoader::load_messages() {
+void MessageLoader::loadMessages() {
     // Load messages from a JSON file
     std::ifstream file("resource/messages.json");
     if (!file.is_open()) {
@@ -15,7 +15,7 @@ void MessageLoader::load_messages() {
     file >> messages;
 }
 
-nlohmann::json MessageLoader::get_message(const std::string& key) {
+nlohmann::json MessageLoader::getMessage(const std::string& key) {
     if (messages.contains(key)) {
         return messages[key];
     } else {
@@ -24,5 +24,5 @@ nlohmann::json MessageLoader::get_message(const std::string& key) {
 }
 
 MessageLoader::MessageLoader() {
-    load_messages();
+    loadMessages();
 }

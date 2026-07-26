@@ -11,13 +11,13 @@
 #include <tgbot/types/InlineKeyboardButton.h>
 
 MessageData
-MessageService::load_message(const MessageTemplateData& message_template) {
+MessageService::loadMessage(const MessageTemplateData& message_template) {
     MessageData data;
 
     // get text from json
-    auto message_json = message_loader_.get_message(message_template.key);
+    auto message_json = message_loader_.getMessage(message_template.key);
     data.text = message_json["text"];
-    replace_by_vector(data.text, message_template.text_placeholders);
+    replaceByVector(data.text, message_template.text_placeholders);
 
     // get buttons from json
     auto button_rows = message_json["buttons"];
@@ -28,8 +28,8 @@ MessageService::load_message(const MessageTemplateData& message_template) {
         for (const auto& button_json : row) {
             auto button_ptr = std::make_shared<TgBot::InlineKeyboardButton>();
             std::string btn_text = button_json["text"];
-            replace_by_vector(btn_text,
-                              message_template.buttons_placeholders[idx_btn]);
+            replaceByVector(btn_text,
+                            message_template.buttons_placeholders[idx_btn]);
             button_ptr->text = std::move(btn_text);
             button_ptr->callbackData = button_json["callback"];
             buttons_row.push_back(std::move(button_ptr));
@@ -42,25 +42,25 @@ MessageService::load_message(const MessageTemplateData& message_template) {
     return data;
 }
 
-void MessageService::send_message(UserSession& session,
-                                  const MessageTemplateData& message_template) {
-    auto message_data = load_message(message_template);
+void MessageService::sendMessage(UserSession& session,
+                                 const MessageTemplateData& message_template) {
+    auto message_data = loadMessage(message_template);
     auto message_ptr = bot_.getApi().sendMessage(
         session.chat_id, message_data.text, nullptr, 0, message_data.keyboard);
-    delete_last(session);
+    deleteLast(session);
     session.last_message_id = message_ptr->messageId;
 }
-void MessageService::send_message(UserSession& session,
-                                  const MessageData& message_data) {
+void MessageService::sendMessage(UserSession& session,
+                                 const MessageData& message_data) {
     auto message_ptr = bot_.getApi().sendMessage(
         session.chat_id, message_data.text, nullptr, 0, message_data.keyboard);
-    delete_last(session);
+    deleteLast(session);
     session.last_message_id = message_ptr->messageId;
 }
 
-void MessageService::edit_message(UserSession& session,
-                                  const MessageTemplateData& message_template) {
-    auto message_data = load_message(message_template);
+void MessageService::editMessage(UserSession& session,
+                                 const MessageTemplateData& message_template) {
+    auto message_data = loadMessage(message_template);
     try {
         if (session.last_message_id == 0) {
             throw TgBot::TgException{"Message does not exist",
@@ -69,21 +69,21 @@ void MessageService::edit_message(UserSession& session,
         bot_.getApi().editMessageText(message_data.text, session.chat_id,
                                       session.last_message_id, "", "", nullptr,
                                       message_data.keyboard);
-    } catch (const TgBot::TgException&) { send_message(session, message_data); }
+    } catch (const TgBot::TgException&) { sendMessage(session, message_data); }
 }
 
-void MessageService::delete_message(int64_t chat_id, int32_t message_id) try {
+void MessageService::deleteMessage(int64_t chat_id, int32_t message_id) try {
     bot_.getApi().deleteMessage(chat_id, message_id);
 } catch (const TgBot::TgException& e) { std::cout << e.what() << '\n'; }
 
-void MessageService::delete_message(const TgBot::Message::Ptr& message) {
-    delete_message(message->chat->id, message->messageId);
+void MessageService::deleteMessage(const TgBot::Message::Ptr& message) {
+    deleteMessage(message->chat->id, message->messageId);
 }
 
-void MessageService::delete_last(UserSession& session) {
+void MessageService::deleteLast(UserSession& session) {
     if (session.last_message_id == 0 || session.chat_id == 0) {
         return;
     }
-    delete_message(session.chat_id, session.last_message_id);
+    deleteMessage(session.chat_id, session.last_message_id);
     session.last_message_id = 0;
 }
