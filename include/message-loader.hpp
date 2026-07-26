@@ -2,16 +2,17 @@
 
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
+
 #include <string>
 
 class MessageLoader {
   private:
     nlohmann::json messages;
 
-    void loadMessages();
+    void load_messages();
 
   public:
-    nlohmann::json getMessage(const std::string& key);
+    nlohmann::json get_message(const std::string& key);
 
     MessageLoader();
     ~MessageLoader() = default;

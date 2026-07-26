@@ -1,14 +1,15 @@
 #pragma once
 
-#include <cstdint>
-#include <optional>
-#include <tgbot/tgbot.h>
-#include <unordered_map>
-
 #include "bot/user-states.hpp"
 #include "database/database.hpp"
 #include "models/body-metrics.hpp"
 #include "models/user-data.hpp"
+
+#include <cstdint>
+#include <optional>
+#include <unordered_map>
+
+#include <tgbot/tgbot.h>
 
 struct UserSession {
     UserStates current_state = UserStates::MainMenu;
@@ -23,11 +24,12 @@ class UserSessionManager {
   public:
     explicit UserSessionManager(Database& db) : database_(db) {}
 
-    UserSession& get_session(int64_t user_id);
     UserSession& get_session(const TgBot::Message::Ptr& message);
-    void removeSession(int64_t user_id);
+    void remove_session(int64_t user_id);
 
   private:
     std::unordered_map<int64_t, UserSession> sessions_;
     Database& database_;
+
+    UserSession& get_session(int64_t user_id);
 };

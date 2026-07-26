@@ -1,9 +1,11 @@
 #include "message-loader.hpp"
-#include <fstream>
+
 #include <nlohmann/json.hpp>
+
+#include <fstream>
 #include <string>
 
-void MessageLoader::loadMessages() {
+void MessageLoader::load_messages() {
     // Load messages from a JSON file
     std::ifstream file("resource/messages.json");
     if (!file.is_open()) {
@@ -13,7 +15,7 @@ void MessageLoader::loadMessages() {
     file >> messages;
 }
 
-nlohmann::json MessageLoader::getMessage(const std::string& key) {
+nlohmann::json MessageLoader::get_message(const std::string& key) {
     if (messages.contains(key)) {
         return messages[key];
     } else {
@@ -22,5 +24,5 @@ nlohmann::json MessageLoader::getMessage(const std::string& key) {
 }
 
 MessageLoader::MessageLoader() {
-    loadMessages();
+    load_messages();
 }

@@ -1,5 +1,7 @@
 #include "bot/user-session.hpp"
+
 #include <cstdint>
+
 #include <tgbot/types/Message.h>
 
 UserSession& UserSessionManager::get_session(int64_t user_id) {
@@ -11,11 +13,12 @@ UserSession& UserSessionManager::get_session(int64_t user_id) {
     return it->second;
 }
 
-void UserSessionManager::removeSession(int64_t user_id) {
+void UserSessionManager::remove_session(int64_t user_id) {
     sessions_.erase(user_id);
 }
 
-UserSession& UserSessionManager::get_session(const TgBot::Message::Ptr& message) {
+UserSession&
+UserSessionManager::get_session(const TgBot::Message::Ptr& message) {
     int64_t user_id = message->from->id;
     UserSession& session = get_session(user_id);
 
