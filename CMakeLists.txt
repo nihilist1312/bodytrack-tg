@@ -16,6 +16,7 @@ find_package(TgBot CONFIG REQUIRED)
 
 add_executable(bodytrack-tg
     src/main.cpp
+    src/bot/message-service.cpp
     src/bot/bot.cpp
     src/bot/user-session.cpp
     src/handlers/callback-handler.cpp

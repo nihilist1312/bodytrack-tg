@@ -1,0 +1,89 @@
+#include "bot/message-service.hpp"
+
+#include "bot/user-session.hpp"
+#include "utils.hpp"
+
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+
+#include <tgbot/TgException.h>
+#include <tgbot/types/InlineKeyboardButton.h>
+
+MessageData
+MessageService::load_message(const MessageTemplateData& message_template) {
+    MessageData data;
+
+    // get text from json
+    auto message_json = message_loader_.get_message(message_template.key);
+    data.text = message_json["text"];
+    replace_by_vector(data.text, message_template.text_placeholders);
+
+    // get buttons from json
+    auto button_rows = message_json["buttons"];
+    size_t idx_btn = 0;
+    for (const auto& row : button_rows) {
+        std::vector<TgBot::InlineKeyboardButton::Ptr> buttons_row;
+
+        for (const auto& button_json : row) {
+            auto button_ptr = std::make_shared<TgBot::InlineKeyboardButton>();
+            std::string btn_text = button_json["text"];
+            replace_by_vector(btn_text,
+                              message_template.buttons_placeholders[idx_btn]);
+            button_ptr->text = std::move(btn_text);
+            button_ptr->callbackData = button_json["callback"];
+            buttons_row.push_back(std::move(button_ptr));
+            ++idx_btn;
+        }
+
+        data.keyboard->inlineKeyboard.push_back(std::move(buttons_row));
+    }
+
+    return data;
+}
+
+void MessageService::send_message(UserSession& session,
+                                  const MessageTemplateData& message_template) {
+    auto message_data = load_message(message_template);
+    auto message_ptr = bot_.getApi().sendMessage(
+        session.chat_id, message_data.text, nullptr, 0, message_data.keyboard);
+    delete_last(session);
+    session.last_message_id = message_ptr->messageId;
+}
+void MessageService::send_message(UserSession& session,
+                                  const MessageData& message_data) {
+    auto message_ptr = bot_.getApi().sendMessage(
+        session.chat_id, message_data.text, nullptr, 0, message_data.keyboard);
+    delete_last(session);
+    session.last_message_id = message_ptr->messageId;
+}
+
+void MessageService::edit_message(UserSession& session,
+                                  const MessageTemplateData& message_template) {
+    auto message_data = load_message(message_template);
+    try {
+        if (session.last_message_id == 0) {
+            throw TgBot::TgException{"Message does not exist",
+                                     TgBot::TgException::ErrorCode::NotFound};
+        }
+        bot_.getApi().editMessageText(message_data.text, session.chat_id,
+                                      session.last_message_id, "", "", nullptr,
+                                      message_data.keyboard);
+    } catch (const TgBot::TgException&) { send_message(session, message_data); }
+}
+
+void MessageService::delete_message(int64_t chat_id, int32_t message_id) try {
+    bot_.getApi().deleteMessage(chat_id, message_id);
+} catch (const TgBot::TgException& e) { std::cout << e.what() << '\n'; }
+
+void MessageService::delete_message(const TgBot::Message::Ptr& message) {
+    delete_message(message->chat->id, message->messageId);
+}
+
+void MessageService::delete_last(UserSession& session) {
+    if (session.last_message_id == 0 || session.chat_id == 0) {
+        return;
+    }
+    delete_message(session.chat_id, session.last_message_id);
+    session.last_message_id = 0;
+}
