@@ -25,7 +25,8 @@ add_executable(bodytrack-tg
     src/config.cpp
     src/database.cpp
     src/message-loader.cpp
-    src/utils.cpp
+    src/utils/placeholders.cpp
+    src/utils/input_parser.cpp
 )
 
 target_link_libraries(bodytrack-tg PRIVATE
