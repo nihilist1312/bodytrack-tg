@@ -22,6 +22,7 @@ add_executable(bodytrack-tg
     src/handlers/callback-handler.cpp
     src/handlers/command-handler.cpp
     src/handlers/message-handler.cpp
+    src/models/user-data.cpp
     src/config.cpp
     src/database.cpp
     src/message-loader.cpp

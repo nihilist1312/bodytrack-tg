@@ -39,3 +39,20 @@ UserSessionManager::getSession(const TgBot::Message::Ptr& message) {
 
     return session;
 }
+
+UserSession&
+UserSessionManager::getSession(const TgBot::CallbackQuery::Ptr& query) {
+    int64_t user_id = query->from->id;
+    UserSession& session = getSession(user_id);
+
+    if (!session.user_data) {
+        spdlog::info("User {} is not exist. Registration", user_id);
+        session.current_state = UserStates::RegistrationNeed;
+        session.user_data.emplace();
+        session.user_data->user_id = query->from->id;
+    }
+
+    session.chat_id = query->message->chat->id;
+
+    return session;
+}

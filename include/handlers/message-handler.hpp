@@ -9,27 +9,25 @@
 
 class MessageHandler {
   public:
-    MessageHandler(TgBot::Bot& bot, Database& database,
-                   UserSessionManager& userSessionManager,
+    MessageHandler(Database& database, UserSessionManager& user_session_manager,
                    MessageService& message_service)
-        : bot_(bot), database_(database),
-          userSessionManager_(userSessionManager),
+        : database_(database), user_session_manager_(user_session_manager),
           message_service_(message_service) {}
 
     void handleMessage(const TgBot::Message::Ptr& message);
 
   private:
-    TgBot::Bot& bot_;
+    // TgBot::Bot& bot_;
     Database& database_;
-    UserSessionManager& userSessionManager_;
+    UserSessionManager& user_session_manager_;
     MessageService& message_service_;
 
     void handleTextMessage(const TgBot::Message::Ptr& message);
     void handleFileMessage(const TgBot::Message::Ptr& message);
 
     // registration
-    void onName(const TgBot::Message::Ptr& message);
-    void onAge(const TgBot::Message::Ptr& message);
+    void onName(const TgBot::Message::Ptr& message, UserSession& session);
+    void onAge(const TgBot::Message::Ptr& message, UserSession& session);
 
     // input metrics
     void onWeight(const TgBot::Message::Ptr& message);
@@ -46,4 +44,7 @@ class MessageHandler {
     // ввод в формате leftArm,rightArm,leftLeg,rightLeg,trunk (dev)
     void onMuscleMassSegments(const TgBot::Message::Ptr& message);
     void onFatMassSegments(const TgBot::Message::Ptr& message);
+
+    void defaultHandler(const TgBot::Message::Ptr& message,
+                        UserSession& session);
 };

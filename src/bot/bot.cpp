@@ -1,5 +1,6 @@
 #include "bot/bot.hpp"
 
+#include "bot/message-service.hpp"
 #include "bot/user-session.hpp"
 #include "config.hpp"
 #include "database/database.hpp"
@@ -7,45 +8,53 @@
 #include "handlers/command-handler.hpp"
 #include "handlers/message-handler.hpp"
 #include "message-loader.hpp"
+
+#include <spdlog/spdlog.h>
 #include <tgbot/net/TgLongPoll.h>
 #include <tgbot/tgbot.h>
 #include <tgbot/types/Message.h>
 
-#include <iostream>
-
 void bot_start() {
     // init
     static Config config = loadConfig();
-    static TgBot::Bot bot{config.botToken};
+    spdlog::info("Auth token: {}", config.bot_token);
+    static TgBot::Bot bot{config.bot_token};
     static Database database;
     static UserSessionManager session_manager{database};
     static MessageLoader message_loader;
+    static MessageService message_service{bot, message_loader};
 
-    MessageHandler message_handler{bot, database, session_manager, message_loader};
-    CommandHandler command_handler{bot, database, session_manager, message_loader};
-    CallbackHandler callback_handler{bot, database, session_manager, message_loader};
+    // пропускаем старые сообщения
+    // bot.getApi().getUpdates(0, 0, 0, 0);
+
+    MessageHandler message_handler{database, session_manager, message_service};
+    CommandHandler command_handler{database, session_manager, message_service};
+    CallbackHandler callback_handler{database, session_manager,
+                                     message_service};
 
     // bind handlers
 
     // commands
-    bot.getEvents().onCommand("start", [&command_handler](const TgBot::Message::Ptr& message) {
-        command_handler.handleStartCommand(message);
-    });
+    bot.getEvents().onCommand(
+        "start", [&command_handler](const TgBot::Message::Ptr& message) {
+            command_handler.onStart(message);
+        });
 
-    bot.getEvents().onAnyMessage([&message_handler](const TgBot::Message::Ptr& message) {
-        message_handler.handleMessage(message);
-    });
+    bot.getEvents().onAnyMessage(
+        [&message_handler](const TgBot::Message::Ptr& message) {
+            message_handler.handleMessage(message);
+        });
 
-    bot.getEvents().onCallbackQuery([&callback_handler](const TgBot::CallbackQuery::Ptr& query) {
-        callback_handler.handleCallback(query);
-    });
+    bot.getEvents().onCallbackQuery(
+        [&callback_handler](const TgBot::CallbackQuery::Ptr& query) {
+            callback_handler.handleCallback(query);
+        });
 
-    TgBot::TgLongPoll long_poll{bot};
-    while (true)
-        try {
-            long_poll.start();
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << '\n';
-            continue;
-        }
+    auto updates = bot.getApi().getUpdates(-1, 0, 100);
+
+    TgBot::TgLongPoll long_poll(bot);
+
+    while (true) {
+        long_poll.start();
+    }
 }

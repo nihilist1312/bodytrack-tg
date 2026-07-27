@@ -1,7 +1,7 @@
 #include "handlers/message-handler.hpp"
 
 #include "bot/user-session.hpp"
-#include "bot/user-states.hpp"
+#include "types/user-states.hpp"
 
 #include <string>
 
@@ -10,24 +10,24 @@
 #include <tgbot/types/Message.h>
 // dev
 void MessageHandler::handleFileMessage(const TgBot::Message::Ptr& message) {
-    UserSession& session = userSessionManager_.getSession(message);
+    UserSession& session = user_session_manager_.getSession(message);
 
     message_service_.deleteMessage(message);
 }
 
 void MessageHandler::handleTextMessage(const TgBot::Message::Ptr& message) {
     spdlog::debug("handle text message");
-    UserSession& session = userSessionManager_.getSession(message);
+    UserSession& session = user_session_manager_.getSession(message);
 
     switch (session.current_state) {
     case UserStates::InputUserName:
-        onName(message);
+        onName(message, session);
         break;
     case UserStates::InputUserAge:
-        onAge(message);
+        onAge(message, session);
         break;
     default:
-        message_service_.deleteMessage(message);
+        defaultHandler(message, session);
         break;
     }
 }
@@ -44,26 +44,47 @@ void MessageHandler::handleMessage(const TgBot::Message::Ptr& message) {
     }
 }
 
-void MessageHandler::onName(const TgBot::Message::Ptr& message) {
+void MessageHandler::onName(const TgBot::Message::Ptr& message,
+                            UserSession& session) {
     spdlog::debug("Name handle");
-    UserSession& session = userSessionManager_.getSession(message);
+    message_service_.deleteMessage(message);
     if (session.user_data->set_name(message->text)) {
         spdlog::debug("Set user name: {}", session.user_data->user_name);
         message_service_.editMessage(session, {"request_age"});
+        session.current_state = UserStates::InputUserAge;
     } else {
         spdlog::debug("Incorrect name");
-        message_service_.editMessage(session, {"invalid_name"});
+        message_service_.editMessage(
+            session, {"invalid_name", {}, {{message->from->firstName}}});
     }
 }
 
-void MessageHandler::onAge(const TgBot::Message::Ptr& message) {
+void MessageHandler::onAge(const TgBot::Message::Ptr& message,
+                           UserSession& session) {
     spdlog::debug("Ade handle");
-    UserSession& session = userSessionManager_.getSession(message);
+    message_service_.deleteMessage(message);
     if (session.user_data->set_age(message->text)) {
         spdlog::debug("Set user age: {}", session.user_data->age);
         message_service_.editMessage(session, {"request_gender"});
+        session.current_state = UserStates::InputUserSex;
     } else {
         spdlog::debug("Incorrect age");
         message_service_.editMessage(session, {"invalid_age"});
     }
+}
+
+void MessageHandler::defaultHandler(const TgBot::Message::Ptr& message,
+                                    UserSession& session) {
+    message_service_.deleteMessage(message);
+    // если регистрация не пройдена, перезапускаем ее
+    // if (session.current_state >= UserStates::RegistrationNeed &&
+    //     UserStates::InputUserSex >= session.current_state) {
+    //     session.current_state = UserStates::RegistrationNeed;
+    //     message_service_.editMessage(session, {"registration"});
+    // }
+    // // dev. используем версию главного меню без значений
+    // else {
+    //     session.current_state = UserStates::MainMenu;
+    //     message_service_.editMessage(session, {"empty_menu"});
+    // }
 }

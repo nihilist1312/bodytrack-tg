@@ -8,7 +8,7 @@ Config loadConfig() {
     // Load the bot token from an environment variable
     const char* token = std::getenv("BOT_TOKEN");
     if (token) {
-        config.botToken = token;
+        config.bot_token = token;
     } else {
         throw std::runtime_error("BOT_TOKEN environment variable is not set.");
     }

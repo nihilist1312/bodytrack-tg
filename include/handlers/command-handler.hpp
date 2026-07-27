@@ -1,36 +1,28 @@
 #pragma once
 
+#include "bot/message-service.hpp"
 #include "bot/user-session.hpp"
 #include "database/database.hpp"
-#include "message-loader.hpp"
+
 #include <tgbot/tgbot.h>
 
 class CommandHandler {
   public:
-    CommandHandler(TgBot::Bot& bot, Database& database, UserSessionManager& userSessionManager,
-                   MessageLoader& messageLoader)
-        : bot_(bot), database_(database), userSessionManager_(userSessionManager),
-          messageLoader_(messageLoader) {}
+    CommandHandler(Database& database, UserSessionManager& session_manager,
+                   MessageService& message_service)
+        : database_(database), session_manager_(session_manager),
+          message_service_(message_service) {}
 
-    // void handleCommand(const TgBot::Message::Ptr& message);
-    void handleStartCommand(const TgBot::Message::Ptr& message);
-    void handleHelpCommand(const TgBot::Message::Ptr& message);
-    void handleAddCommand(const TgBot::Message::Ptr& message);
-    void handleStatsCommand(const TgBot::Message::Ptr& message);
-    void handleHistoryCommand(const TgBot::Message::Ptr& message);
-    void handleGoalCommand(const TgBot::Message::Ptr& message);
-    void handleSettingsCommand(const TgBot::Message::Ptr& message);
+    void onStart(const TgBot::Message::Ptr& message);
+    void onHelp(const TgBot::Message::Ptr& message);
+    void onAdd(const TgBot::Message::Ptr& message);
+    void onStats(const TgBot::Message::Ptr& message);
+    void onHistory(const TgBot::Message::Ptr& message);
+    void onGoal(const TgBot::Message::Ptr& message);
+    void onSettings(const TgBot::Message::Ptr& message);
 
   private:
-    TgBot::Bot& bot_;
     Database& database_;
-    UserSessionManager& userSessionManager_;
-    MessageLoader& messageLoader_;
-
-    // UserSession& get_session(const TgBot::Message::Ptr& message);
-    TgBot::Message::Ptr sendTextAndKeyboard(
-        const std::string& key, UserSession& session,
-        const std::vector<std::string>& text_replace = {},
-        const std::unordered_map<size_t, std::vector<std::string>>& button_replace = {});
-    void deleteMessage(const TgBot::Message::Ptr& message);
+    UserSessionManager& session_manager_;
+    MessageService& message_service_;
 };

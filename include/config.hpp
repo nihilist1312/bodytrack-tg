@@ -3,7 +3,7 @@
 #include <string>
 
 struct Config {
-    std::string botToken;
+    std::string bot_token;
 };
 
 Config loadConfig();
