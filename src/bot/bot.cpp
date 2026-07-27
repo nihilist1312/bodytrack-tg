@@ -9,6 +9,8 @@
 #include "handlers/message-handler.hpp"
 #include "message-loader.hpp"
 
+#include <filesystem>
+
 #include <spdlog/spdlog.h>
 #include <tgbot/net/TgLongPoll.h>
 #include <tgbot/tgbot.h>
@@ -17,8 +19,12 @@
 void bot_start() {
     // init
     static Config config = loadConfig();
+    // create database directories
+    std::filesystem::create_directories(config.db_path.parent_path());
     spdlog::info("Auth token: {}", config.bot_token);
     static TgBot::Bot bot{config.bot_token};
+
+    // create folder for
     static Database database;
     static UserSessionManager session_manager{database};
     static MessageLoader message_loader;

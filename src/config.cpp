@@ -12,5 +12,10 @@ Config loadConfig() {
     } else {
         throw std::runtime_error("BOT_TOKEN environment variable is not set.");
     }
+
+    const auto db_path = std::getenv("DB_PATH");
+    if (db_path) {
+        config.db_path = db_path;
+    }
     return config;
 }
