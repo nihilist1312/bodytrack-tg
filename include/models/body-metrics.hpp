@@ -24,7 +24,7 @@ struct BodyMetrics {
     double height;
     uint8_t age;
     double muscleMass;
-    double bodyFatMass;
+    double fatMass;
 
     // additional
     std::optional<double> waterMass;

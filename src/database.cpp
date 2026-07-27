@@ -15,7 +15,7 @@ BodyMetrics getBodyMetricsFromRow(const SQLite::Statement& query) {
     metrics.height = query.getColumn("height").getDouble();
     metrics.age = static_cast<uint8_t>(query.getColumn("age").getInt());
     metrics.muscleMass = query.getColumn("muscle_mass").getDouble();
-    metrics.bodyFatMass = query.getColumn("body_fat_mass").getDouble();
+    metrics.fatMass = query.getColumn("body_fat_mass").getDouble();
 
     if (!query.getColumn("water_mass").isNull()) {
         metrics.waterMass = query.getColumn("water_mass").getDouble();
@@ -73,7 +73,7 @@ void bindBodyMetricsToStatement(SQLite::Statement& query,
     query.bind(4, body_metrics.height);
     query.bind(5, body_metrics.age);
     query.bind(6, body_metrics.muscleMass);
-    query.bind(7, body_metrics.bodyFatMass);
+    query.bind(7, body_metrics.fatMass);
 
     if (body_metrics.waterMass.has_value()) {
         query.bind(8, body_metrics.waterMass.value());
