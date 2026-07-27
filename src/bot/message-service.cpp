@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include <spdlog/spdlog.h>
 #include <tgbot/TgException.h>
 #include <tgbot/types/InlineKeyboardButton.h>
 
@@ -44,46 +45,63 @@ MessageService::loadMessage(const MessageTemplateData& message_template) {
 
 void MessageService::sendMessage(UserSession& session,
                                  const MessageTemplateData& message_template) {
+    spdlog::debug("Send message. Key: {}", message_template.key);
     auto message_data = loadMessage(message_template);
-    auto message_ptr = bot_.getApi().sendMessage(
-        session.chat_id, message_data.text, nullptr, 0, message_data.keyboard);
-    deleteLast(session);
-    session.last_message_id = message_ptr->messageId;
+    sendMessage(session, message_data);
 }
 void MessageService::sendMessage(UserSession& session,
                                  const MessageData& message_data) {
     auto message_ptr = bot_.getApi().sendMessage(
         session.chat_id, message_data.text, nullptr, 0, message_data.keyboard);
+    spdlog::debug("Message sended. Chat ID: {}. Message ID: {}",
+                  session.chat_id, message_ptr->messageId);
     deleteLast(session);
     session.last_message_id = message_ptr->messageId;
+    spdlog::debug("Set last message id for user {}: {}",
+                  session.user_data->user_id, session.last_message_id);
 }
 
 void MessageService::editMessage(UserSession& session,
                                  const MessageTemplateData& message_template) {
+    spdlog::debug("Edit message: Chat ID {}, Message ID {}. Message key: {}",
+                  session.chat_id, session.last_message_id,
+                  message_template.key);
     auto message_data = loadMessage(message_template);
     try {
         if (session.last_message_id == 0) {
+            spdlog::debug("Cnnot edit message with ID 0");
             throw TgBot::TgException{"Message does not exist",
                                      TgBot::TgException::ErrorCode::NotFound};
         }
         bot_.getApi().editMessageText(message_data.text, session.chat_id,
                                       session.last_message_id, "", "", nullptr,
                                       message_data.keyboard);
-    } catch (const TgBot::TgException&) { sendMessage(session, message_data); }
+        spdlog::debug("Edited succesfully");
+    } catch (const TgBot::TgException&) {
+        spdlog ::debug("Edited failed. Try send");
+        sendMessage(session, message_data);
+    }
 }
 
 void MessageService::deleteMessage(int64_t chat_id, int32_t message_id) try {
+    spdlog::debug("Delete message: Chat ID {}, Message ID {}", chat_id,
+                  message_id);
+    if (message_id == 0 || chat_id == 0) {
+        spdlog::debug("Cannot delete a message that has a chat or message ID "
+                      "equal to 0.");
+        return;
+    }
     bot_.getApi().deleteMessage(chat_id, message_id);
-} catch (const TgBot::TgException& e) { std::cout << e.what() << '\n'; }
+} catch (const TgBot::TgException& e) {
+    spdlog::debug("Delete failed. What: {}", e.what());
+}
 
 void MessageService::deleteMessage(const TgBot::Message::Ptr& message) {
     deleteMessage(message->chat->id, message->messageId);
 }
 
 void MessageService::deleteLast(UserSession& session) {
-    if (session.last_message_id == 0 || session.chat_id == 0) {
-        return;
-    }
+    spdlog::debug("Delete last message.");
     deleteMessage(session.chat_id, session.last_message_id);
     session.last_message_id = 0;
 }

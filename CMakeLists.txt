@@ -51,3 +51,9 @@ target_link_libraries(bodytrack-tg PRIVATE
 find_package(spdlog CONFIG REQUIRED)
 
 target_link_libraries(bodytrack-tg PRIVATE spdlog::spdlog)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(BUILD_DEBUG)
+else()
+    add_compile_definitions(BUILD_RELEASE)
+endif()
