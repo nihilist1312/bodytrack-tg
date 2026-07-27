@@ -80,13 +80,14 @@ void MessageService::editMessage(UserSession& session,
         spdlog::debug("Message is not modifield");
         return;
     }
+    session.last_message_template = message_template;
     auto message_data = loadMessage(message_template);
+    if (session.last_message_id == 0) {
+        spdlog::debug("Cnnot edit message with ID 0. Send new");
+        sendMessage(session, message_template, message_data);
+        return;
+    }
     try {
-        if (session.last_message_id == 0) {
-            spdlog::debug("Cnnot edit message with ID 0");
-            throw TgBot::TgException{"Message does not exist",
-                                     TgBot::TgException::ErrorCode::NotFound};
-        }
         bot_.getApi().editMessageText(message_data.text, session.chat_id,
                                       session.last_message_id, "", "", nullptr,
                                       message_data.keyboard);
