@@ -10,4 +10,7 @@ struct UserData {
     std::string user_name;
     uint8_t age;
     Sex sex;
+
+    bool set_name(const std::string& new_name);
+    bool set_age(const std::string& age_text);
 };
