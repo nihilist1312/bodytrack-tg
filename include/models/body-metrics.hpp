@@ -5,10 +5,10 @@
 #include <string>
 
 struct SegmentMass {
-    double leftArm;
-    double rightArm;
-    double leftLeg;
-    double rightLeg;
+    double left_arm;
+    double right_arm;
+    double left_leg;
+    double right_leg;
     double trunk;
 };
 
@@ -23,17 +23,17 @@ struct BodyMetrics {
     double weight;
     double height;
     uint8_t age;
-    double muscleMass;
-    double fatMass;
+    double muscle_mass;
+    double fat_mass;
 
     // additional
-    std::optional<double> waterMass;
-    std::optional<double> boneMass;
+    std::optional<double> water_mass;
+    std::optional<double> bone_mass;
     // value from 1 to 10, where 1 is the lowest and 10 is the highest
-    std::optional<uint8_t> visceralFat;
-    std::optional<double> proteinMass;
+    std::optional<uint8_t> visceral_fat;
+    std::optional<double> protein_mass;
 
     // segment mass
-    std::optional<SegmentMass> muscleMassSegments;
-    std::optional<SegmentMass> fatMassSegments;
+    std::optional<SegmentMass> segment_muscle_mass;
+    std::optional<SegmentMass> segment_fat_mass;
 };
