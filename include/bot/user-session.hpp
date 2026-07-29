@@ -17,6 +17,7 @@ struct UserSession {
     UserStates current_state = UserStates::MainMenu;
     std::optional<UserData> user_data;
     std::optional<BodyMetrics> last_body_metrics;
+    BodyMetrics new_body_metrics;
 
     int64_t chat_id = 0;
     int32_t last_message_id = 0;
