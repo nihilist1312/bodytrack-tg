@@ -160,7 +160,7 @@ void MessageService::requestWeight(UserSession& session) {
                      {},
                      {{std::to_string(session.last_body_metrics->weight)}}});
     } else {
-        editMessage(session, {"request_weigth_empty"});
+        editMessage(session, {"request_weight_empty"});
     }
     session.current_state = UserStates::InputWeight;
 }
@@ -172,7 +172,7 @@ void MessageService::requestHeight(UserSession& session) {
                      {},
                      {{std::to_string(session.last_body_metrics->height)}}});
     } else {
-        editMessage(session, {"request_heigth_empty"});
+        editMessage(session, {"request_height_empty"});
     }
     session.current_state = UserStates::InputHeight;
 }
@@ -220,7 +220,7 @@ void MessageService::invalidWeight(UserSession& session) {
                      {},
                      {{std::to_string(session.last_body_metrics->weight)}}});
     } else {
-        editMessage(session, {"invalid_weigth_empty"});
+        editMessage(session, {"invalid_weight_empty"});
     }
     session.current_state = UserStates::InputWeight;
 }
@@ -232,7 +232,7 @@ void MessageService::invalidHeight(UserSession& session) {
                      {},
                      {{std::to_string(session.last_body_metrics->height)}}});
     } else {
-        editMessage(session, {"invalid_heigth_empty"});
+        editMessage(session, {"invalid_height_empty"});
     }
     session.current_state = UserStates::InputHeight;
 }

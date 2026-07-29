@@ -38,7 +38,7 @@ bool setDate(std::string& target, const std::string& text) {
         int year = parseIntStrict(match[1].str());
         int month = parseIntStrict(match[2].str());
         int day = parseIntStrict(match[3].str());
-        if (year >= 2000 && getCurrentYear() <= year &&
+        if (year >= 2000 && getCurrentYear() >= year &&
             isDateCorrect(year, month, day)) {
             target = std::to_string(year) + "-" + std::to_string(month) + "-" +
                      std::to_string(day);
