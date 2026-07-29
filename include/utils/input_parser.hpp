@@ -5,8 +5,6 @@
 
 std::string normalizeName(const std::string& raw_name);
 
-int parseIntStrict(std::string_view text) noexcept;
-
 int normalizeAge(std::string_view text) noexcept;
 
 bool setDate(std::string& target, const std::string& text);

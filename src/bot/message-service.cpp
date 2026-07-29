@@ -24,7 +24,7 @@ MessageService::loadMessage(const MessageTemplate& message_template) {
     auto message_json = message_loader_.getMessage(message_template.key);
     data.text = message_json["text"];
     if (!message_template.text_placeholders.empty())
-        replaceByVector(data.text, message_template.text_placeholders);
+        format_inplace(data.text, message_template.text_placeholders);
 
     // get buttons from json
     auto button_rows = message_json["buttons"];
@@ -38,8 +38,8 @@ MessageService::loadMessage(const MessageTemplate& message_template) {
             std::string btn_text = button_json["text"];
             if (idx_btn < message_template.buttons_placeholders.size() &&
                 !message_template.buttons_placeholders[idx_btn].empty()) {
-                replaceByVector(btn_text,
-                                message_template.buttons_placeholders[idx_btn]);
+                format_inplace(btn_text,
+                               message_template.buttons_placeholders[idx_btn]);
             }
             button_ptr->text = std::move(btn_text);
             button_ptr->callbackData = button_json["callback"];
@@ -140,9 +140,9 @@ void MessageService::openMainMenu(UserSession& session) {
         editMessage(session, {"main_menu",
                               {
                                   session.user_data->user_name,
-                                  std::to_string(current_metrics->weight),
-                                  std::to_string(current_metrics->fat_mass),
-                                  std::to_string(current_metrics->muscle_mass),
+                                  current_metrics->weight,
+                                  current_metrics->fat_mass,
+                                  current_metrics->muscle_mass,
                                   current_metrics->date,
                               }});
     } else {
@@ -155,10 +155,9 @@ void MessageService::openMainMenu(UserSession& session) {
 void MessageService::requestWeight(UserSession& session) {
     // если измерение есть то предлагаем прошлый вес
     if (session.last_body_metrics.has_value()) {
-        editMessage(session,
-                    {"request_weight",
-                     {},
-                     {{std::to_string(session.last_body_metrics->weight)}}});
+        editMessage(
+            session,
+            {"request_weight", {}, {{session.last_body_metrics->weight}}});
     } else {
         editMessage(session, {"request_weight_empty"});
     }
@@ -167,10 +166,9 @@ void MessageService::requestWeight(UserSession& session) {
 
 void MessageService::requestHeight(UserSession& session) {
     if (session.last_body_metrics.has_value()) {
-        editMessage(session,
-                    {"request_height",
-                     {},
-                     {{std::to_string(session.last_body_metrics->height)}}});
+        editMessage(
+            session,
+            {"request_height", {}, {{session.last_body_metrics->height}}});
     } else {
         editMessage(session, {"request_height_empty"});
     }
@@ -179,11 +177,9 @@ void MessageService::requestHeight(UserSession& session) {
 
 void MessageService::requestMuscleMass(UserSession& session) {
     if (session.last_body_metrics.has_value()) {
-        editMessage(
-            session,
-            {"request_muscle_mass",
-             {},
-             {{std::to_string(session.last_body_metrics->muscle_mass)}}});
+        editMessage(session, {"request_muscle_mass",
+                              {},
+                              {{session.last_body_metrics->muscle_mass}}});
     } else {
         editMessage(session, {"request_muscle_mass_empty"});
     }
@@ -192,10 +188,9 @@ void MessageService::requestMuscleMass(UserSession& session) {
 
 void MessageService::requestFatMass(UserSession& session) {
     if (session.last_body_metrics.has_value()) {
-        editMessage(session,
-                    {"request_fat_mass",
-                     {},
-                     {{std::to_string(session.last_body_metrics->fat_mass)}}});
+        editMessage(
+            session,
+            {"request_fat_mass", {}, {{session.last_body_metrics->fat_mass}}});
     } else {
         editMessage(session, {"request_fat_mass_empty"});
     }
@@ -203,22 +198,20 @@ void MessageService::requestFatMass(UserSession& session) {
 }
 
 void MessageService::printSummary(UserSession& session) {
-    editMessage(session,
-                {"save_metric",
-                 {session.new_body_metrics.date,
-                  std::to_string(session.new_body_metrics.weight),
-                  std::to_string(session.new_body_metrics.height),
-                  std::to_string(session.new_body_metrics.muscle_mass),
-                  std::to_string(session.new_body_metrics.fat_mass), ""}});
+    editMessage(
+        session,
+        {"save_metric",
+         {session.new_body_metrics.date, session.new_body_metrics.weight,
+          session.new_body_metrics.height, session.new_body_metrics.muscle_mass,
+          session.new_body_metrics.fat_mass}});
     session.current_state = UserStates::MetricSummary;
 }
 
 void MessageService::invalidWeight(UserSession& session) {
     if (session.last_body_metrics.has_value()) {
-        editMessage(session,
-                    {"invalid_weight",
-                     {},
-                     {{std::to_string(session.last_body_metrics->weight)}}});
+        editMessage(
+            session,
+            {"invalid_weight", {}, {{session.last_body_metrics->weight}}});
     } else {
         editMessage(session, {"invalid_weight_empty"});
     }
@@ -227,10 +220,9 @@ void MessageService::invalidWeight(UserSession& session) {
 
 void MessageService::invalidHeight(UserSession& session) {
     if (session.last_body_metrics.has_value()) {
-        editMessage(session,
-                    {"invalid_height",
-                     {},
-                     {{std::to_string(session.last_body_metrics->height)}}});
+        editMessage(
+            session,
+            {"invalid_height", {}, {{session.last_body_metrics->height}}});
     } else {
         editMessage(session, {"invalid_height_empty"});
     }
@@ -239,11 +231,9 @@ void MessageService::invalidHeight(UserSession& session) {
 
 void MessageService::invalidMuscleMass(UserSession& session) {
     if (session.last_body_metrics.has_value()) {
-        editMessage(
-            session,
-            {"invalid_muscle_mass",
-             {},
-             {{std::to_string(session.last_body_metrics->muscle_mass)}}});
+        editMessage(session, {"invalid_muscle_mass",
+                              {},
+                              {{session.last_body_metrics->muscle_mass}}});
     } else {
         editMessage(session, {"invalid_muscle_mass_empty"});
     }
@@ -252,10 +242,9 @@ void MessageService::invalidMuscleMass(UserSession& session) {
 
 void MessageService::invalidFatMass(UserSession& session) {
     if (session.last_body_metrics.has_value()) {
-        editMessage(session,
-                    {"invalid_fat_mass",
-                     {},
-                     {{std::to_string(session.last_body_metrics->fat_mass)}}});
+        editMessage(
+            session,
+            {"invalid_fat_mass", {}, {{session.last_body_metrics->fat_mass}}});
     } else {
         editMessage(session, {"invalid_fat_mass_empty"});
     }

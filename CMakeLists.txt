@@ -30,6 +30,7 @@ add_executable(bodytrack-tg
     src/utils/input_parser.cpp
     src/logger.cpp
     src/utils/date.cpp
+    src/utils/conversions.cpp
 )
 
 target_link_libraries(bodytrack-tg PRIVATE

@@ -1,5 +1,6 @@
 #include "utils/input_parser.hpp"
 
+#include "utils/conversions.hpp"
 #include "utils/date.hpp"
 
 #include <charconv>
@@ -18,26 +19,17 @@ std::string normalizeName(const std::string& raw_name) {
     return res;
 }
 
-int parseIntStrict(std::string_view text) noexcept {
-    int res = 0;
-    auto [ptr, ec] =
-        std::from_chars(text.data(), text.data() + text.size(), res);
-    if (ec != std::errc{} || ptr != text.data() + text.size())
-        return -1;
-    return res;
-}
-
 int normalizeAge(std::string_view text) noexcept {
-    return parseIntStrict(text);
+    return strToInt(text);
 }
 
 bool setDate(std::string& target, const std::string& text) {
     static std::regex pat{R"((20\d{2})-(\d{2})-(\d{2}))"};
     std::smatch match;
     if (std::regex_match(text, match, pat)) {
-        int year = parseIntStrict(match[1].str());
-        int month = parseIntStrict(match[2].str());
-        int day = parseIntStrict(match[3].str());
+        int year = strToInt(match[1].str());
+        int month = strToInt(match[2].str());
+        int day = strToInt(match[3].str());
         if (year >= 2000 && getCurrentYear() >= year &&
             isDateCorrect(year, month, day)) {
             target = std::to_string(year) + "-" + std::to_string(month) + "-" +
