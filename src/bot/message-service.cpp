@@ -2,6 +2,8 @@
 
 #include "bot/user-session.hpp"
 #include "types/message-template.hpp"
+#include "types/user-states.hpp"
+#include "utils/date.hpp"
 #include "utils/placeholders.hpp"
 
 #include <cstddef>
@@ -127,4 +129,145 @@ void MessageService::deleteLast(UserSession& session) {
     session.last_message_template = {};
     deleteMessage(session.chat_id, session.last_message_id);
     session.last_message_id = 0;
+}
+
+void MessageService::openMainMenu(UserSession& session) {
+    session.last_body_metrics =
+        database_.getLastBodyMetrics(session.user_data->user_id);
+    spdlog::debug("Open main menu");
+    if (session.last_body_metrics) {
+        auto& current_metrics = session.last_body_metrics;
+        editMessage(session, {"main_menu",
+                              {
+                                  session.user_data->user_name,
+                                  std::to_string(current_metrics->weight),
+                                  std::to_string(current_metrics->fat_mass),
+                                  std::to_string(current_metrics->muscle_mass),
+                                  current_metrics->date,
+                              }});
+    } else {
+        spdlog::debug("Open without data");
+        editMessage(session, {"empty_menu"});
+    }
+    session.current_state = UserStates::MainMenu;
+}
+
+void MessageService::requestWeight(UserSession& session) {
+    // если измерение есть то предлагаем прошлый вес
+    if (session.last_body_metrics.has_value()) {
+        editMessage(session,
+                    {"request_weight",
+                     {},
+                     {{std::to_string(session.last_body_metrics->weight)}}});
+    } else {
+        editMessage(session, {"request_weigth_empty"});
+    }
+    session.current_state = UserStates::InputWeight;
+}
+
+void MessageService::requestHeight(UserSession& session) {
+    if (session.last_body_metrics.has_value()) {
+        editMessage(session,
+                    {"request_height",
+                     {},
+                     {{std::to_string(session.last_body_metrics->height)}}});
+    } else {
+        editMessage(session, {"request_heigth_empty"});
+    }
+    session.current_state = UserStates::InputHeight;
+}
+
+void MessageService::requestMuscleMass(UserSession& session) {
+    if (session.last_body_metrics.has_value()) {
+        editMessage(
+            session,
+            {"request_muscle_mass",
+             {},
+             {{std::to_string(session.last_body_metrics->muscle_mass)}}});
+    } else {
+        editMessage(session, {"request_muscle_mass_empty"});
+    }
+    session.current_state = UserStates::InputMuscleMass;
+}
+
+void MessageService::requestFatMass(UserSession& session) {
+    if (session.last_body_metrics.has_value()) {
+        editMessage(session,
+                    {"request_fat_mass",
+                     {},
+                     {{std::to_string(session.last_body_metrics->fat_mass)}}});
+    } else {
+        editMessage(session, {"request_fat_mass_empty"});
+    }
+    session.current_state = UserStates::InputFatMass;
+}
+
+void MessageService::printSummary(UserSession& session) {
+    editMessage(session,
+                {"save_metric",
+                 {session.new_body_metrics.date,
+                  std::to_string(session.new_body_metrics.weight),
+                  std::to_string(session.new_body_metrics.height),
+                  std::to_string(session.new_body_metrics.muscle_mass),
+                  std::to_string(session.new_body_metrics.fat_mass), ""}});
+    session.current_state = UserStates::MetricSummary;
+}
+
+void MessageService::invalidWeight(UserSession& session) {
+    if (session.last_body_metrics.has_value()) {
+        editMessage(session,
+                    {"invalid_weight",
+                     {},
+                     {{std::to_string(session.last_body_metrics->weight)}}});
+    } else {
+        editMessage(session, {"invalid_weigth_empty"});
+    }
+    session.current_state = UserStates::InputWeight;
+}
+
+void MessageService::invalidHeight(UserSession& session) {
+    if (session.last_body_metrics.has_value()) {
+        editMessage(session,
+                    {"invalid_height",
+                     {},
+                     {{std::to_string(session.last_body_metrics->height)}}});
+    } else {
+        editMessage(session, {"invalid_heigth_empty"});
+    }
+    session.current_state = UserStates::InputHeight;
+}
+
+void MessageService::invalidMuscleMass(UserSession& session) {
+    if (session.last_body_metrics.has_value()) {
+        editMessage(
+            session,
+            {"invalid_muscle_mass",
+             {},
+             {{std::to_string(session.last_body_metrics->muscle_mass)}}});
+    } else {
+        editMessage(session, {"invalid_muscle_mass_empty"});
+    }
+    session.current_state = UserStates::InputMuscleMass;
+}
+
+void MessageService::invalidFatMass(UserSession& session) {
+    if (session.last_body_metrics.has_value()) {
+        editMessage(session,
+                    {"invalid_fat_mass",
+                     {},
+                     {{std::to_string(session.last_body_metrics->fat_mass)}}});
+    } else {
+        editMessage(session, {"invalid_fat_mass_empty"});
+    }
+    session.current_state = UserStates::InputFatMass;
+}
+
+void MessageService::requestDate(UserSession& session) {
+    editMessage(session, {"request_date", {}, {{getCurrentDate()}}});
+    session.current_state = UserStates::InputDate;
+}
+
+void MessageService::invalidDate(UserSession& session) {
+    editMessage(session, {"invalid_date", {}, {{getCurrentDate()}}});
+    session.current_state = UserStates::InputDate;
 }

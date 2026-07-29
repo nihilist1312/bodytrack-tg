@@ -30,10 +30,11 @@ class MessageHandler {
     void onAge(const TgBot::Message::Ptr& message, UserSession& session);
 
     // input metrics
-    void onWeight(const TgBot::Message::Ptr& message);
-    void onHeight(const TgBot::Message::Ptr& message);
-    void onMusculeMass(const TgBot::Message::Ptr& message);
-    void onFatMass(const TgBot::Message::Ptr& message);
+    void onDate(const TgBot::Message::Ptr& message, UserSession& session);
+    void onWeight(const TgBot::Message::Ptr& message, UserSession& session);
+    void onHeight(const TgBot::Message::Ptr& message, UserSession& session);
+    void onMuscleMass(const TgBot::Message::Ptr& message, UserSession& session);
+    void onFatMass(const TgBot::Message::Ptr& message, UserSession& session);
 
     // input optional metrics
     void onWaterMass(const TgBot::Message::Ptr& message);
