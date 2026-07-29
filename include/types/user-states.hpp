@@ -21,7 +21,7 @@ enum class UserStates {
     InputWeight,
     InputHeight,
     InputMuscleMass,
-    InputBodyFatMass,
+    InputFatMass,
 
     // input optional metrics
     SelectOptionalMetrics,
