@@ -61,3 +61,17 @@ bool setMass(double& target, std::string_view text) noexcept {
     target = res;
     return true;
 }
+
+bool setHeight(double& target, std::string_view text) noexcept {
+    double res = 0.;
+    auto [ptr, ec] =
+        std::from_chars(text.data(), text.data() + text.size(), res);
+    // ошибка в тексте
+    if (ec != std::errc{} || ptr != text.data() + text.size())
+        return false;
+    // ошибка в значении
+    if (res <= 150. || res > 250.)
+        return false;
+    target = res;
+    return true;
+}
