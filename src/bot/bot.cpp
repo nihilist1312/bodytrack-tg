@@ -28,7 +28,7 @@ void bot_start() {
     static Database database;
     static UserSessionManager session_manager{database};
     static MessageLoader message_loader;
-    static MessageService message_service{bot, message_loader};
+    static MessageService message_service{bot, message_loader, database};
 
     // пропускаем старые сообщения
     // bot.getApi().getUpdates(0, 0, 0, 0);
