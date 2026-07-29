@@ -116,5 +116,179 @@
         }
       ]
     ]
+  },
+  "add_record": {
+    "text": "📝 Добавление записи\n\nВыберите способ добавления данных.",
+    "buttons": [
+      [
+        {
+          "text": "📄 Из файла",
+          "callback": "add_metric:file_mode"
+        },
+        {
+          "text": "✍️ Вручную",
+          "callback": "add_metric:manually"
+        }
+      ]
+    ]
+  },
+  "request_date": {
+    "text": "📅 Укажите дату измерения.\n\nВведите дату в формате ГГГГ-ММ-ДД\n\nНапример: 2026-07-28",
+    "buttons": [
+      [
+        {
+          "text": "{}",
+          "callback": "add_metric:date_today"
+        }
+      ]
+    ]
+  },
+  "invalid_date": {
+    "text": "❌ Некорректная дата.\n\nПожалуйста, введите дату в формате ГГГГ-ММ-ДД\n\nНапример: 2026-07-28",
+    "buttons": [
+      [
+        {
+          "text": "{}",
+          "callback": "add_metric:date_today"
+        }
+      ]
+    ]
+  },
+  "request_weight": {
+    "text": "⚖️ Укажите ваш вес в килограммах.\n\nНапример: 83.4",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:weight_previous"
+        }
+      ]
+    ]
+  },
+  "invalid_weight": {
+    "text": "❌ Некорректный вес.\n\nПожалуйста, введите вес числом в килограммах.\n\nНапример: 83.4",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:weight_previous"
+        }
+      ]
+    ]
+  },
+  "request_weight_empty": {
+    "text": "⚖️ Укажите ваш вес в килограммах.\n\nНапример: 83.4",
+    "buttons": []
+  },
+  "invalid_weight_empty": {
+    "text": "❌ Некорректный вес.\n\nПожалуйста, введите вес числом в килограммах.\n\nНапример: 83.4",
+    "buttons": []
+  },
+  "request_height": {
+    "text": "📏 Укажите ваш рост в сантиметрах.\n\nНапример: 186",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} см",
+          "callback": "add_metric:height_previous"
+        }
+      ]
+    ]
+  },
+  "invalid_height": {
+    "text": "❌ Некорректный рост.\n\nПожалуйста, введите рост числом в сантиметрах.\n\nНапример: 186",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} см",
+          "callback": "add_metric:height_previous"
+        }
+      ]
+    ]
+  },
+  "request_height_empty": {
+    "text": "📏 Укажите ваш рост в сантиметрах.\n\nНапример: 186",
+    "buttons": []
+  },
+  "invalid_height_empty": {
+    "text": "❌ Некорректный рост.\n\nПожалуйста, введите рост числом в сантиметрах.\n\nНапример: 186",
+    "buttons": []
+  },
+  "request_muscle_mass": {
+    "text": "💪 Укажите вашу мышечную массу в килограммах.\n\nНапример: 39.1",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:muscle_mass_previous"
+        }
+      ]
+    ]
+  },
+  "invalid_muscle_mass": {
+    "text": "❌ Некорректная мышечная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 39.1",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:muscle_mass_previous"
+        }
+      ]
+    ]
+  },
+  "request_muscle_mass_empty": {
+    "text": "💪 Укажите вашу мышечную массу в килограммах.\n\nНапример: 39.1",
+    "buttons": []
+  },
+  "invalid_muscle_mass_empty": {
+    "text": "❌ Некорректная мышечная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 39.1",
+    "buttons": []
+  },
+  "request_fat_mass": {
+    "text": "🔥 Укажите вашу жировую массу в килограммах.\n\nНапример: 14.2",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:fat_mass_previous"
+        }
+      ]
+    ]
+  },
+  "invalid_fat_mass": {
+    "text": "❌ Некорректная жировая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.2",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:fat_mass_previous"
+        }
+      ]
+    ]
+  },
+  "request_fat_mass_empty": {
+    "text": "🔥 Укажите вашу жировую массу в килограммах.\n\nНапример: 14.2",
+    "buttons": []
+  },
+  "invalid_fat_mass_empty": {
+    "text": "❌ Некорректная жировая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.2",
+    "buttons": []
+  },
+  "save_metric": {
+    "text": "📋 Проверьте введённые данные.\n\n📅 Дата: {}\n⚖️ Вес: {} кг\n📏 Рост: {} см\n💪 Мышечная масса: {} кг\n🔥 Жировая масса: {} кг\n{}\n\nЕсли всё верно, сохраните запись или добавьте дополнительные показатели.",
+    "buttons": [
+      [
+        {
+          "text": "💾 Сохранить запись",
+          "callback": "add_metric:save"
+        }
+      ],
+      [
+        {
+          "text": "➕ Дополнительные данные",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
   }
 }
