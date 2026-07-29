@@ -15,7 +15,7 @@ struct SegmentMass {
 // храним данные о метриках тела пользователя в абсолютных значениях, kg, cm
 struct BodyMetrics {
     // id of the record in the database, not the user id
-    int64_t id;
+    std::optional<int64_t> id;
     int64_t user_id;
     std::string date; // format: YYYY-MM-DD, for example: 2026-07-23
 
