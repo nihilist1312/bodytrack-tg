@@ -1,29 +1,34 @@
 #include "models/user-data.hpp"
 
+#include "utils/conversions.hpp"
 #include "utils/input_parser.hpp"
 
 #include <cstddef>
+#include <optional>
 #include <string>
 
-bool UserData::set_name(const std::string& new_name) {
+#include <utf8/checked.h>
+#include <utf8cpp/utf8.h>
+
+bool set_name(UserData& data, const std::string& new_name) {
     static constexpr size_t MIN_NAME_LENGTH = 2;
     static constexpr size_t MAX_NAME_LENGTH = 64;
     std::string normal_name = normalizeName(new_name);
-    if (MIN_NAME_LENGTH > normal_name.size() ||
-        normal_name.size() > MAX_NAME_LENGTH) {
+    auto length = utf8::distance(normal_name.begin(), normal_name.end());
+    if (MIN_NAME_LENGTH > length || length > MAX_NAME_LENGTH) {
         return false;
     }
-    user_name = normal_name;
+    data.user_name = std::move(normal_name);
     return true;
 }
 
-bool UserData::set_age(const std::string& age_text) {
+bool set_age(UserData& data, const std::string& age_text) {
     static constexpr int MIN_AGE = 7;
     static constexpr int MAX_AGE = 150;
-    int normal_age = normalizeAge(age_text);
-    if (MIN_AGE > normal_age || normal_age > MAX_AGE) {
+    std::optional<int> age = strToInt(age_text);
+    if (!age || MIN_AGE > age || age > MAX_AGE) {
         return false;
     }
-    age = normal_age;
+    data.age = age.value();
     return true;
 }

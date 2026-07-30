@@ -2,7 +2,6 @@
 
 #include "bot/user-session.hpp"
 #include "types/user-states.hpp"
-#include "utils/input_parser.hpp"
 
 #include <string>
 
@@ -64,7 +63,7 @@ void MessageHandler::handleMessage(const TgBot::Message::Ptr& message) {
 void MessageHandler::onName(const TgBot::Message::Ptr& message,
                             UserSession& session) {
     spdlog::debug("Name handle");
-    if (session.user_data->set_name(message->text)) {
+    if (set_name(session.user_data.value(), message->text)) {
         spdlog::debug("Set user name: {}", session.user_data->user_name);
         message_service_.editMessage(session, {"request_age"});
         session.current_state = UserStates::InputUserAge;
@@ -78,7 +77,7 @@ void MessageHandler::onName(const TgBot::Message::Ptr& message,
 void MessageHandler::onAge(const TgBot::Message::Ptr& message,
                            UserSession& session) {
     spdlog::debug("Age handle");
-    if (session.user_data->set_age(message->text)) {
+    if (set_age(session.user_data.value(), message->text)) {
         spdlog::debug("Set user age: {}", session.user_data->age);
         message_service_.editMessage(session, {"request_gender"});
         session.current_state = UserStates::InputUserSex;
@@ -91,7 +90,7 @@ void MessageHandler::onAge(const TgBot::Message::Ptr& message,
 void MessageHandler::onDate(const TgBot::Message::Ptr& message,
                             UserSession& session) {
     spdlog::debug("Date handle");
-    if (setDate(session.new_body_metrics.date, message->text)) {
+    if (setDate(session.new_body_metrics, message->text)) {
         spdlog::debug("Set date: {}", session.new_body_metrics.date);
         message_service_.requestWeight(session);
     } else {
@@ -115,7 +114,7 @@ void MessageHandler::onWeight(const TgBot::Message::Ptr& message,
 void MessageHandler::onHeight(const TgBot::Message::Ptr& message,
                               UserSession& session) {
     spdlog::debug("Height handle");
-    if (setHeight(session.new_body_metrics.height, message->text)) {
+    if (setHeight(session.new_body_metrics, message->text)) {
         spdlog::debug("Set height: {}", session.new_body_metrics.height);
         message_service_.requestMuscleMass(session);
     } else {

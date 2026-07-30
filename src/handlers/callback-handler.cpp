@@ -39,7 +39,7 @@ void CallbackHandler::onRegistration(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
         spdlog::debug("Select default name: {}", query->from->firstName);
-        if (session.user_data->set_name(query->from->firstName)) {
+        if (set_name(session.user_data.value(), query->from->firstName)) {
             spdlog::debug("Set default name: {}", session.user_data->user_name);
             session.current_state = UserStates::InputUserAge;
             message_service_.editMessage(session, {"request_age"});
@@ -89,6 +89,9 @@ void CallbackHandler::onMainMenu(const TgBot::CallbackQuery::Ptr& query) {
         spdlog::debug("Add record");
         message_service_.editMessage(session, {"add_record"});
         session.current_state = UserStates::AddMetricSelectMode;
+    } else {
+        spdlog::debug("Incorrect collback");
+        return;
     }
 }
 

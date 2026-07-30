@@ -6,6 +6,7 @@
     "sqlite3",
     "nlohmann-json",
     "sqlitecpp",
-    "spdlog"
+    "spdlog",
+    "utfcpp"
   ]
 }

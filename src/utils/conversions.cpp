@@ -2,13 +2,14 @@
 
 #include <array>
 #include <charconv>
+#include <optional>
 
-int strToInt(std::string_view text) noexcept {
+std::optional<int> strToInt(std::string_view text) noexcept {
     int res = 0;
     auto [ptr, ec] =
         std::from_chars(text.data(), text.data() + text.size(), res);
     if (ec != std::errc{} || ptr != text.data() + text.size())
-        return -1;
+        return std::nullopt;
     return res;
 }
 
@@ -17,4 +18,13 @@ std::string doubleToStr(double v, int p) noexcept {
     auto [ptr, ec] = std::to_chars(buf.data(), buf.data() + buf.size(), v,
                                    std::chars_format::fixed, p);
     return std::string(buf.data(), ptr);
+}
+
+std::optional<double> strToDouble(std::string_view text) noexcept {
+    double res = 0;
+    auto [ptr, ec] =
+        std::from_chars(text.data(), text.data() + text.size(), res);
+    if (ec != std::errc{} || ptr != text.data() + text.size())
+        return std::nullopt;
+    return res;
 }
