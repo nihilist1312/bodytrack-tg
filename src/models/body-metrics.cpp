@@ -18,8 +18,7 @@ bool setDate(BodyMetrics& target, const std::string& text) {
         int day = strToInt(match[3].str()).value();
         if (year >= 2000 && getCurrentYear() >= year &&
             isDateCorrect(year, month, day)) {
-            target.date = std::to_string(year) + "-" + std::to_string(month) +
-                          "-" + std::to_string(day);
+            target.date = text;
             return true;
         }
     }

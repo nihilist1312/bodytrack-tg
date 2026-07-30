@@ -40,24 +40,28 @@ CREATE TABLE IF NOT EXISTS body_metrics (
     fat_right_leg REAL,
     fat_trunk REAL,
 
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    UNIQUE (user_id, date)
 );
 )";
 
     // getters
-    constexpr auto getUserName = "SELECT user_name FROM users WHERE user_id = ?;";
+    constexpr auto getUserName =
+        "SELECT user_name FROM users WHERE user_id = ?;";
     constexpr auto getLastBodyMetrics =
-        "SELECT * FROM body_metrics WHERE user_id = ? ORDER BY date DESC LIMIT 1";
+        "SELECT * FROM body_metrics WHERE user_id = ? ORDER BY date DESC LIMIT "
+        "1";
     constexpr auto getBodyMetricsHistory =
         "SELECT * FROM body_metrics WHERE user_id = ? ORDER BY date DESC";
     constexpr auto getUserData = "SELECT * FROM users WHERE user_id = ?;";
-    constexpr auto getBodyMetricsById = "SELECT * FROM body_metrics WHERE id = ?;";
+    constexpr auto getBodyMetricsById =
+        "SELECT * FROM body_metrics WHERE id = ?;";
     constexpr auto getBodyMetricsByUserIdAndDate =
         "SELECT * FROM body_metrics WHERE user_id = ? AND date = ?;";
 
     // modifiers
-    constexpr auto addUser =
-        "INSERT OR IGNORE INTO users (user_id, user_name, age, sex) VALUES (?, ?, ?, ?);";
+    constexpr auto addUser = "INSERT OR IGNORE INTO users (user_id, user_name, "
+                             "age, sex) VALUES (?, ?, ?, ?);";
     constexpr auto addBodyMetrics = R"(
 INSERT OR IGNORE INTO body_metrics (
     user_id, date, weight, height, age, muscle_mass, body_fat_mass,
@@ -84,7 +88,8 @@ UPDATE body_metrics SET
     fat_left_arm = ?, fat_right_arm = ?, fat_left_leg = ?, fat_right_leg = ?, fat_trunk = ?
 WHERE user_id = ? AND date = ?;
 )";
-    constexpr auto deleteBodyMetricsById = "DELETE FROM body_metrics WHERE id = ?;";
+    constexpr auto deleteBodyMetricsById =
+        "DELETE FROM body_metrics WHERE id = ?;";
     constexpr auto deleteBodyMetricsByUserIdAndDate =
         "DELETE FROM body_metrics WHERE user_id = ? AND date = ?;";
     constexpr auto deleteUser = "DELETE FROM users WHERE user_id = ?;";

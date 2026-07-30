@@ -124,6 +124,12 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
         session.new_body_metrics.date = getCurrentDate();
+        // если запись за сегодня уже существует
+        if (database_.getBodyMetricsByUserIdAndDate(
+                session.user_data->user_id, session.new_body_metrics.date)) {
+            message_service_.doublicateDate(session);
+            return;
+        }
         spdlog::debug("Current date select: {}", session.new_body_metrics.date);
         message_service_.requestWeight(session);
     } else if (query->data.ends_with("weight_previous")) {
@@ -186,5 +192,14 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         }
         database_.addBodyMetrics(session.new_body_metrics);
         message_service_.openMainMenu(session);
+    } else if (query->data.ends_with("change_date")) {
+        if (session.current_state != UserStates::DateDublicate) {
+            spdlog::debug("Incorrect callback");
+            return;
+        }
+        message_service_.requestDate(session);
+        session.current_state = UserStates::InputDate;
+    } else {
+        spdlog::debug("Incorrect callback");
     }
 }

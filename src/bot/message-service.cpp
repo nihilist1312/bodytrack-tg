@@ -25,7 +25,7 @@ MessageService::loadMessage(const MessageTemplate& message_template) {
     auto message_json = message_loader_.getMessage(message_template.key);
     data.text = message_json["text"];
     if (!message_template.text_placeholders.empty())
-        format_inplace(data.text, message_template.text_placeholders);
+        formatInplace(data.text, message_template.text_placeholders);
 
     // get buttons from json
     auto button_rows = message_json["buttons"];
@@ -37,13 +37,23 @@ MessageService::loadMessage(const MessageTemplate& message_template) {
         for (const auto& button_json : row) {
             auto button_ptr = std::make_shared<TgBot::InlineKeyboardButton>();
             std::string btn_text = button_json["text"];
-            if (idx_btn < message_template.buttons_placeholders.size() &&
-                !message_template.buttons_placeholders[idx_btn].empty()) {
-                format_inplace(btn_text,
-                               message_template.buttons_placeholders[idx_btn]);
+            if (idx_btn < message_template.buttons_text_placeholders.size() &&
+                !message_template.buttons_text_placeholders[idx_btn].empty()) {
+                formatInplace(
+                    btn_text,
+                    message_template.buttons_text_placeholders[idx_btn]);
             }
+            spdlog::debug("Button {} text: {}", idx_btn, btn_text);
+            std::string btn_data = button_json["callback"];
+            if (idx_btn < message_template.buttons_data_placeholders.size() &&
+                !message_template.buttons_data_placeholders[idx_btn].empty()) {
+                formatInplace(
+                    btn_data,
+                    message_template.buttons_data_placeholders[idx_btn]);
+            }
+            spdlog::debug("Button {} data: {}", idx_btn, btn_data);
             button_ptr->text = std::move(btn_text);
-            button_ptr->callbackData = button_json["callback"];
+            button_ptr->callbackData = std::move(btn_data);
             buttons_row.push_back(std::move(button_ptr));
             ++idx_btn;
         }
@@ -209,6 +219,7 @@ void MessageService::printSummary(UserSession& session) {
 }
 
 void MessageService::invalidWeight(UserSession& session) {
+    spdlog::debug("Invalid weigth");
     if (session.last_body_metrics.has_value()) {
         editMessage(
             session,
@@ -220,6 +231,7 @@ void MessageService::invalidWeight(UserSession& session) {
 }
 
 void MessageService::invalidHeight(UserSession& session) {
+    spdlog::debug("Invalid heigth");
     if (session.last_body_metrics.has_value()) {
         editMessage(
             session,
@@ -231,6 +243,7 @@ void MessageService::invalidHeight(UserSession& session) {
 }
 
 void MessageService::invalidMuscleMass(UserSession& session) {
+    spdlog::debug("Invalid muscle mass");
     if (session.last_body_metrics.has_value()) {
         editMessage(session, {"invalid_muscle_mass",
                               {},
@@ -242,6 +255,7 @@ void MessageService::invalidMuscleMass(UserSession& session) {
 }
 
 void MessageService::invalidFatMass(UserSession& session) {
+    spdlog::debug("Invalid fat mass");
     if (session.last_body_metrics.has_value()) {
         editMessage(
             session,
@@ -258,6 +272,16 @@ void MessageService::requestDate(UserSession& session) {
 }
 
 void MessageService::invalidDate(UserSession& session) {
+    spdlog::debug("Invalid date");
     editMessage(session, {"invalid_date", {}, {{getCurrentDate()}}});
     session.current_state = UserStates::InputDate;
+}
+
+void MessageService::doublicateDate(UserSession& session) {
+    spdlog::debug("Date doublicate: {}", session.new_body_metrics.date);
+    editMessage(session, {"duplicate_date",
+                          {session.new_body_metrics.date},
+                          {{session.new_body_metrics.date}},
+                          {{session.new_body_metrics.date}}});
+    session.current_state = UserStates::DateDublicate;
 }

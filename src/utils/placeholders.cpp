@@ -17,8 +17,8 @@ template <class... Ts> struct overloaded : Ts... {
 // подсказка компилятору по определению шаблона
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
-void format_inplace(std::string& text,
-                    const std::vector<PlaceholderValue>& data) {
+void formatInplace(std::string& text,
+                   const std::vector<PlaceholderValue>& data) {
     size_t pos = 0;
     for (const auto& elem : data) {
         pos = text.find("{}", pos);
@@ -39,6 +39,6 @@ void format_inplace(std::string& text,
 // Обёртка для удобства: по значению, с возвратом
 std::string format(std::string text,
                    const std::vector<PlaceholderValue>& data) {
-    format_inplace(text, data);
+    formatInplace(text, data);
     return text;
 }

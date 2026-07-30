@@ -9,7 +9,8 @@
 struct MessageTemplate {
     std::string key;
     std::vector<PlaceholderValue> text_placeholders;
-    std::vector<std::vector<PlaceholderValue>> buttons_placeholders;
+    std::vector<std::vector<PlaceholderValue>> buttons_text_placeholders;
+    std::vector<std::vector<PlaceholderValue>> buttons_data_placeholders;
 
     friend auto operator<=>(const MessageTemplate& a,
                             const MessageTemplate& b) = default;

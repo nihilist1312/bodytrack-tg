@@ -18,6 +18,7 @@ enum class UserStates {
 
     // input neccessary metrics
     InputDate,
+    DateDublicate,
     InputWeight,
     InputHeight,
     InputMuscleMass,

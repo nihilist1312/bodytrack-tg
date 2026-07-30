@@ -42,6 +42,7 @@ class MessageService {
     void invalidHeight(UserSession& session);
     void invalidMuscleMass(UserSession& session);
     void invalidFatMass(UserSession& session);
+    void doublicateDate(UserSession& session);
 
     void printSummary(UserSession& session);
 
