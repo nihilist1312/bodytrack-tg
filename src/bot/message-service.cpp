@@ -1,6 +1,7 @@
 #include "bot/message-service.hpp"
 
 #include "bot/user-session.hpp"
+#include "models/body-metrics.hpp"
 #include "types/message-template.hpp"
 #include "types/user-states.hpp"
 #include "utils/date.hpp"
@@ -141,7 +142,7 @@ void MessageService::openMainMenu(UserSession& session) {
                               {
                                   session.user_data->user_name,
                                   current_metrics->weight,
-                                  current_metrics->fat_mass,
+                                  fatPercentage(current_metrics.value()),
                                   current_metrics->muscle_mass,
                                   current_metrics->date,
                               }});

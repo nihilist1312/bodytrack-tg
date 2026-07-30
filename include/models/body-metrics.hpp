@@ -37,3 +37,7 @@ struct BodyMetrics {
     std::optional<SegmentMass> segment_muscle_mass;
     std::optional<SegmentMass> segment_fat_mass;
 };
+
+// get body fat percent
+[[nodiscard]]
+double fatPercentage(const BodyMetrics& metric) noexcept;

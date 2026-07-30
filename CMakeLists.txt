@@ -12,8 +12,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(TgBot CONFIG REQUIRED)
-
 add_executable(bodytrack-tg
     src/main.cpp
     src/bot/message-service.cpp
@@ -31,29 +29,26 @@ add_executable(bodytrack-tg
     src/logger.cpp
     src/utils/date.cpp
     src/utils/conversions.cpp
-)
-
-target_link_libraries(bodytrack-tg PRIVATE
-    TgBot::TgBot
+    src/models/body-metrics.cpp
 )
 
 target_include_directories(bodytrack-tg PRIVATE include)
 
+find_package(TgBot CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
-
-target_link_libraries(bodytrack-tg PRIVATE nlohmann_json::nlohmann_json)
-
 find_package(SQLite3 REQUIRED)
 find_package(SQLiteCpp CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(utf8cpp CONFIG REQUIRED)
 
 target_link_libraries(bodytrack-tg PRIVATE
+    TgBot::TgBot
     SQLiteCpp
     SQLite3::SQLite3
+    spdlog::spdlog
+    utf8cpp::utf8cpp
+    nlohmann_json::nlohmann_json
 )
-
-find_package(spdlog CONFIG REQUIRED)
-
-target_link_libraries(bodytrack-tg PRIVATE spdlog::spdlog)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(BUILD_DEBUG)
