@@ -116,7 +116,9 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         // загружаем последнее измерение для подсказок
         session.last_body_metrics =
             database_.getLastBodyMetrics(session.user_data->user_id);
-        session.new_body_metrics = {.user_id = session.user_data->user_id};
+        // инициализируем запись с возрастом и user_id
+        session.new_body_metrics = {.user_id = session.user_data->user_id,
+                                    .age = session.user_data->age};
         message_service_.requestDate(session);
     } else if (query->data.ends_with("date_today")) {
         if (session.current_state != UserStates::InputDate) {

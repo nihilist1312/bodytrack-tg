@@ -22,7 +22,7 @@ struct BodyMetrics {
     // necessary
     double weight;
     double height;
-    uint8_t age;
+    int age;
     double muscle_mass;
     double fat_mass;
 
