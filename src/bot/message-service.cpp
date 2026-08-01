@@ -5,7 +5,7 @@
 #include "types/message-template.hpp"
 #include "types/user-states.hpp"
 #include "utils/date.hpp"
-#include "utils/placeholders.hpp"
+#include "utils/formatting.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -209,12 +209,12 @@ void MessageService::requestFatMass(UserSession& session) {
 }
 
 void MessageService::printSummary(UserSession& session) {
-    editMessage(
-        session,
-        {"save_metric",
-         {session.new_body_metrics.date, session.new_body_metrics.weight,
-          session.new_body_metrics.height, session.new_body_metrics.muscle_mass,
-          session.new_body_metrics.fat_mass}});
+    editMessage(session, {"save_metric",
+                          {session.body_metrics_draft.date,
+                           session.body_metrics_draft.weight,
+                           session.body_metrics_draft.height,
+                           session.body_metrics_draft.muscle_mass,
+                           session.body_metrics_draft.fat_mass}});
     session.current_state = UserStates::MetricSummary;
 }
 
@@ -278,10 +278,333 @@ void MessageService::invalidDate(UserSession& session) {
 }
 
 void MessageService::doublicateDate(UserSession& session) {
-    spdlog::debug("Date doublicate: {}", session.new_body_metrics.date);
+    spdlog::debug("Date doublicate: {}", session.body_metrics_draft.date);
     editMessage(session, {"duplicate_date",
-                          {session.new_body_metrics.date},
-                          {{session.new_body_metrics.date}},
-                          {{session.new_body_metrics.date}}});
+                          {session.body_metrics_draft.date},
+                          {{session.body_metrics_draft.date}},
+                          {{session.body_metrics_draft.date}}});
     session.current_state = UserStates::DateDublicate;
+}
+
+void MessageService::selectAdditional(UserSession& session) {
+    spdlog::debug("Additional metrics list");
+    if (haveAdditional(session.body_metrics_draft)) {
+        spdlog::debug("Addition metrics exist");
+        editMessage(session, {"additional_metrics",
+                              {additionalFormat(session.body_metrics_draft)}});
+    }
+    // пишем пояснение если ни одна метрика не была введена
+    else {
+        spdlog::debug("Additional metrics does exist");
+        editMessage(session, {"additional_metrics_empty"});
+    }
+
+    session.current_state = UserStates::SelectAdditionalMetrics;
+}
+
+// Универсальный хелпер для request_*/invalid_* простых (несегментных) метрик
+template <class T>
+void MessageService::requestSimpleMetric(UserSession& session,
+                                         std::optional<T> BodyMetrics::* field,
+                                         UserStates state,
+                                         const std::string& base_message_key,
+                                         const std::string& log_label,
+                                         bool is_invalid) {
+
+    spdlog::debug("Request {}", log_label);
+
+    if (session.body_metrics_draft.*field) {
+        spdlog::debug("{} edit", log_label);
+        if (is_invalid) {
+            editMessage(session, {base_message_key + "_edit"});
+        } else {
+            editMessage(session,
+                        {base_message_key + "_edit",
+                         {(session.body_metrics_draft.*field).value()}});
+        }
+    } else if (session.last_body_metrics &&
+               session.last_body_metrics.value().*field) {
+        spdlog::debug("Previous {}", log_label);
+        editMessage(session,
+                    {base_message_key + "_previous",
+                     {},
+                     {{(session.last_body_metrics.value().*field).value()}}});
+    } else {
+        spdlog::debug("Empty {}", log_label);
+        editMessage(session, {base_message_key});
+    }
+
+    session.current_state = state;
+}
+
+void MessageService::requestWaterMass(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::water_mass,
+                        UserStates::InputWaterMass, "request_water_mass",
+                        "water mass", false);
+}
+
+void MessageService::requestBoneMass(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::bone_mass,
+                        UserStates::InputBoneMass, "request_bone_mass",
+                        "bone mass", false);
+}
+
+void MessageService::requestVisceralFat(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::visceral_fat,
+                        UserStates::InputVisceralFat, "request_visceral_fat",
+                        "visceral fat", false);
+}
+
+void MessageService::requestProteinMass(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::protein_mass,
+                        UserStates::InputProteinMass, "request_protein_mass",
+                        "protein mass", false);
+}
+
+void MessageService::invalidWaterMass(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::water_mass,
+                        UserStates::InputWaterMass, "invalid_water_mass",
+                        "water mass", true);
+}
+
+void MessageService::invalidBoneMass(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::bone_mass,
+                        UserStates::InputBoneMass, "invalid_bone_mass",
+                        "bone mass", true);
+}
+
+void MessageService::invalidVisceralFat(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::visceral_fat,
+                        UserStates::InputVisceralFat, "invalid_visceral_fat",
+                        "visceral fat", true);
+}
+
+void MessageService::invalidProteinMass(UserSession& session) {
+    requestSimpleMetric(session, &BodyMetrics::protein_mass,
+                        UserStates::InputProteinMass, "invalid_protein_mass",
+                        "protein mass", true);
+}
+
+// Универсальный хелпер для request_*/invalid_* сегментных групп (muscle/fat)
+void MessageService::requestSegmentGroup(
+    UserSession& session, std::optional<SegmentMass> BodyMetrics::* field,
+    UserStates state, const std::string& base_message_key,
+    const std::string& log_label) {
+
+    spdlog::debug("Request {}", log_label);
+
+    if (session.segment_mass_draft) {
+        spdlog::debug("{} edit", log_label);
+        editMessage(session,
+                    {base_message_key + "_edit",
+                     {segmentMassFormat(session.body_metrics_draft.*field)}});
+    } else if (session.last_body_metrics &&
+               session.last_body_metrics.value().*field) {
+        spdlog::debug("Previous {}", log_label);
+        editMessage(
+            session,
+            {base_message_key + "_previous",
+             {segmentMassFormat(session.last_body_metrics.value().*field)}});
+    } else {
+        spdlog::debug("Empty {}", log_label);
+        editMessage(session, {base_message_key});
+    }
+
+    session.current_state = state;
+}
+
+void MessageService::requestMuscleSegment(UserSession& session) {
+    requestSegmentGroup(session, &BodyMetrics::segment_muscle_mass,
+                        UserStates::InputMuscleSegments,
+                        "request_segment_muscle_mass", "muscle segment");
+}
+
+void MessageService::requestFatSegment(UserSession& session) {
+    requestSegmentGroup(session, &BodyMetrics::segment_fat_mass,
+                        UserStates::InputFatSegments,
+                        "request_segment_fat_mass", "fat segment");
+}
+
+void MessageService::invalidMuscleSegment(UserSession& session) {
+    requestSegmentGroup(session, &BodyMetrics::segment_muscle_mass,
+                        UserStates::InputMuscleSegments,
+                        "invalid_segment_muscle_mass",
+                        "invalid muscle segment");
+}
+
+void MessageService::invalidFatSegment(UserSession& session) {
+    requestSegmentGroup(session, &BodyMetrics::segment_fat_mass,
+                        UserStates::InputFatSegments,
+                        "invalid_segment_fat_mass", "invalid fat segment");
+}
+
+void MessageService::requestLeftArmMuscle(UserSession& session) {
+    requestSegment(session, "Left arm", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::left_arm, UserStates::InputLeftArmMuscle,
+                   "request_segment_muscle_mass_value");
+}
+
+void MessageService::requestRightArmMuscle(UserSession& session) {
+    requestSegment(session, "Right arm", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::right_arm, UserStates::InputRightArmMuscle,
+                   "request_segment_muscle_mass_value");
+}
+
+void MessageService::requestLeftLegMuscle(UserSession& session) {
+    requestSegment(session, "Left leg", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::left_leg, UserStates::InputLeftLegMuscle,
+                   "request_segment_muscle_mass_value");
+}
+
+void MessageService::requestRightLegMuscle(UserSession& session) {
+    requestSegment(session, "Right leg", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::right_leg, UserStates::InputRightLegMuscle,
+                   "request_segment_muscle_mass_value");
+}
+
+void MessageService::requestTrunkMuscle(UserSession& session) {
+    requestSegment(session, "Trunk", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::trunk, UserStates::InputTrunkMuscle,
+                   "request_segment_muscle_mass_value");
+}
+
+// Универсальный хелпер для request_* и invalid_* сообщений по сегментам массы
+void MessageService::requestSegment(
+    UserSession& session, const std::string& segment_name,
+    std::optional<SegmentMass> BodyMetrics::* metrics_field,
+    std::optional<double> SegmentMass::* field, UserStates state,
+    const std::string& base_message_key) {
+
+    spdlog::debug("Request {}", segment_name);
+
+    std::optional<double>* new_value;
+
+    // проверяем что масса сегментов есть, берем указатель на нужный
+    // и проверяем определен ли он
+    if (session.body_metrics_draft.*metrics_field &&
+        (new_value =
+             &((session.body_metrics_draft.*metrics_field).value().*field)) &&
+        *new_value) {
+        spdlog::debug("{} edit", segment_name);
+        editMessage(session, {base_message_key + "_edit",
+                              {segment_name, new_value->value()}});
+    } else if (session.last_body_metrics &&
+               session.last_body_metrics.value().*metrics_field) {
+        auto& prev_value =
+            (session.last_body_metrics.value().*metrics_field).value().*field;
+        spdlog::debug("Previous value");
+        editMessage(session, {base_message_key + "_previous",
+                              {segment_name, prev_value.value()},
+                              {{prev_value.value()}}});
+    } else {
+        spdlog::debug("Default version");
+        editMessage(session, {base_message_key, {segment_name}});
+    }
+
+    session.current_state = state;
+}
+
+// Обёртки request_*
+void MessageService::requestLeftArmFat(UserSession& session) {
+    requestSegment(session, "Left arm", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::left_arm, UserStates::InputLeftArmFat,
+                   "request_segment_fat_mass_value");
+}
+
+void MessageService::requestRightArmFat(UserSession& session) {
+    requestSegment(session, "Right arm", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::right_arm, UserStates::InputRightArmFat,
+                   "request_segment_fat_mass_value");
+}
+
+void MessageService::requestLeftLegFat(UserSession& session) {
+    requestSegment(session, "Left leg", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::left_leg, UserStates::InputLeftLegFat,
+                   "request_segment_fat_mass_value");
+}
+
+void MessageService::requestRightLegFat(UserSession& session) {
+    requestSegment(session, "Right leg", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::right_leg, UserStates::InputRightLegFat,
+                   "request_segment_fat_mass_value");
+}
+
+void MessageService::requestTrunkFat(UserSession& session) {
+    requestSegment(session, "Trunk", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::trunk, UserStates::InputTrunkFat,
+                   "request_segment_fat_mass_value");
+}
+
+void MessageService::invalidLeftArmMuscle(UserSession& session) {
+    requestSegment(session, "Left arm", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::left_arm, UserStates::InputLeftArmMuscle,
+                   "invalid_segment_muscle_mass_value");
+}
+
+void MessageService::invalidRightArmMuscle(UserSession& session) {
+    requestSegment(session, "Right arm", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::right_arm, UserStates::InputRightArmMuscle,
+                   "invalid_segment_muscle_mass_value");
+}
+
+void MessageService::invalidLeftLegMuscle(UserSession& session) {
+    requestSegment(session, "Left leg", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::left_leg, UserStates::InputLeftLegMuscle,
+                   "invalid_segment_muscle_mass_value");
+}
+
+void MessageService::invalidRightLegMuscle(UserSession& session) {
+    requestSegment(session, "Right leg", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::right_leg, UserStates::InputRightLegMuscle,
+                   "invalid_segment_muscle_mass_value");
+}
+
+void MessageService::invalidTrunkMuscle(UserSession& session) {
+    requestSegment(session, "Trunk", &BodyMetrics::segment_muscle_mass,
+                   &SegmentMass::trunk, UserStates::InputTrunkMuscle,
+                   "invalid_segment_muscle_mass_value");
+}
+
+void MessageService::invalidLeftArmFat(UserSession& session) {
+    requestSegment(session, "Left arm", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::left_arm, UserStates::InputLeftArmFat,
+                   "invalid_segment_fat_mass_value");
+}
+
+void MessageService::invalidRightArmFat(UserSession& session) {
+    requestSegment(session, "Right arm", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::right_arm, UserStates::InputRightArmFat,
+                   "invalid_segment_fat_mass_value");
+}
+
+void MessageService::invalidLeftLegFat(UserSession& session) {
+    requestSegment(session, "Left leg", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::left_leg, UserStates::InputLeftLegFat,
+                   "invalid_segment_fat_mass_value");
+}
+
+void MessageService::invalidRightLegFat(UserSession& session) {
+    requestSegment(session, "Right leg", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::right_leg, UserStates::InputRightLegFat,
+                   "invalid_segment_fat_mass_value");
+}
+
+void MessageService::invalidTrunkFat(UserSession& session) {
+    requestSegment(session, "Trunk", &BodyMetrics::segment_fat_mass,
+                   &SegmentMass::trunk, UserStates::InputTrunkFat,
+                   "invalid_segment_fat_mass_value");
+}
+
+void MessageService::cannotSaveMuscleSegments(UserSession& session) {
+    spdlog::debug("Error save muscle segments");
+    editMessage(session, {"invalid_save_muscle_segments",
+                          {segmentMassFormat(session.segment_mass_draft)}});
+    session.current_state = UserStates::InputMuscleSegments;
+}
+
+void MessageService::cannotSaveFatSegments(UserSession& session) {
+    spdlog::debug("Error save fat segments");
+    editMessage(session, {"invalid_save_fat_segments",
+                          {segmentMassFormat(session.segment_mass_draft)}});
+    session.current_state = UserStates::InputFatSegments;
 }

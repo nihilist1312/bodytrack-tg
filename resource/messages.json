@@ -307,5 +307,1235 @@
         }
       ]
     ]
+  },
+  "additional_metrics": {
+    "text": "📊 Дополнительные показатели\n\n💧 Вода: {}\n🦴 Костная масса: {}\n🫀 Висцеральный жир: {}\n🥩 Белок: {}\n\n💪 Мышечная масса по сегментам\n{}\n\n🔥 Жировая масса по сегментам\n{}\n\nВыберите показатель, который хотите добавить или изменить.",
+    "buttons": [
+      [
+        {
+          "text": "💧 Вода",
+          "callback": "add_metric:water_mass"
+        },
+        {
+          "text": "🦴 Кости",
+          "callback": "add_metric:bone_mass"
+        }
+      ],
+      [
+        {
+          "text": "🫀 Висцеральный жир",
+          "callback": "add_metric:visceral_fat"
+        },
+        {
+          "text": "🥩 Белок",
+          "callback": "add_metric:protein_mass"
+        }
+      ],
+      [
+        {
+          "text": "💪 Мышцы",
+          "callback": "add_metric:segment_muscle_mass"
+        },
+        {
+          "text": "🔥 Жир",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ],
+      [
+        {
+          "text": "💾 Сохранить запись",
+          "callback": "add_metric:save"
+        }
+      ]
+    ]
+  },
+  "additional_metrics_empty": {
+    "text": "📊 Дополнительные показатели\n\nВыберите показатель, который хотите добавить.\n\nЭти данные необязательны, но помогут получить более подробный анализ состава тела.",
+    "buttons": [
+      [
+        {
+          "text": "💧 Вода",
+          "callback": "add_metric:water_mass"
+        },
+        {
+          "text": "🦴 Костная масса",
+          "callback": "add_metric:bone_mass"
+        }
+      ],
+      [
+        {
+          "text": "🫀 Висцеральный жир",
+          "callback": "add_metric:visceral_fat"
+        },
+        {
+          "text": "🥩 Белок",
+          "callback": "add_metric:protein_mass"
+        }
+      ],
+      [
+        {
+          "text": "💪 Мышцы по сегментам",
+          "callback": "add_metric:segment_muscle_mass"
+        }
+      ],
+      [
+        {
+          "text": "🔥 Жир по сегментам",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ],
+      [
+        {
+          "text": "💾 Сохранить запись",
+          "callback": "add_metric:save"
+        }
+      ]
+    ]
+  },
+  "request_water_mass": {
+    "text": "💧 Укажите массу воды в организме в килограммах.\n\nНапример: 42.1",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_water_mass": {
+    "text": "❌ Некорректная масса воды.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 42.1",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_water_mass_previous": {
+    "text": "💧 Укажите массу воды в организме в килограммах.\n\nНапример: 42.1",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:water_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_water_mass_previous": {
+    "text": "❌ Некорректная масса воды.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 42.1",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:water_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_water_mass_edit": {
+    "text": "💧 Укажите массу воды в организме в килограммах.\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:water_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_water_mass_edit": {
+    "text": "❌ Некорректная масса воды.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 42.1",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:water_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_bone_mass": {
+    "text": "🦴 Укажите костную массу в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_bone_mass": {
+    "text": "❌ Некорректная костная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_bone_mass_previous": {
+    "text": "🦴 Укажите костную массу в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:bone_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_bone_mass_previous": {
+    "text": "❌ Некорректная костная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:bone_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_bone_mass_edit": {
+    "text": "🦴 Укажите костную массу в килограммах.\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:bone_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_bone_mass_edit": {
+    "text": "❌ Некорректная костная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:bone_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_visceral_fat": {
+    "text": "🫀 Укажите уровень висцерального жира.\n\nВведите число от 1 до 10.\n\nНапример: 5",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_visceral_fat": {
+    "text": "❌ Некорректный уровень висцерального жира.\n\nПожалуйста, введите целое число от 1 до 10.\n\nНапример: 5",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_visceral_fat_previous": {
+    "text": "🫀 Укажите уровень висцерального жира.\n\nВведите число от 1 до 10.\n\nНапример: 5",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {}",
+          "callback": "add_metric:visceral_fat_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_visceral_fat_previous": {
+    "text": "❌ Некорректный уровень висцерального жира.\n\nПожалуйста, введите целое число от 1 до 10.\n\nНапример: 5",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {}",
+          "callback": "add_metric:visceral_fat_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_visceral_fat_edit": {
+    "text": "🫀 Укажите уровень висцерального жира.\n\nТекущее значение: {}\n\nВведите новое значение или удалите существующее.",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:visceral_fat_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_visceral_fat_edit": {
+    "text": "❌ Некорректный уровень висцерального жира.\n\nПожалуйста, введите целое число от 1 до 10.\n\nНапример: 5",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:visceral_fat_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_protein_mass": {
+    "text": "🥩 Укажите белковую массу в килограммах.\n\nНапример: 14.8",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_protein_mass": {
+    "text": "❌ Некорректная белковая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.8",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_protein_mass_previous": {
+    "text": "🥩 Укажите белковую массу в килограммах.\n\nНапример: 14.8",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:protein_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_protein_mass_previous": {
+    "text": "❌ Некорректная белковая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.8",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:protein_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_protein_mass_edit": {
+    "text": "🥩 Укажите белковую массу в килограммах.\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:protein_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_protein_mass_edit": {
+    "text": "❌ Некорректная белковая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.8",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:protein_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_segment_muscle_mass": {
+    "text": "💪 Укажите мышечную массу по сегментам.\n\nВы можете:\n• ввести 5 значений через пробел в порядке:\nЛР ПР ЛН ПН Т\n\nНапример:\n3.8 3.7 11.2 11.3 28.4\n\nили выбрать сегмент ниже для ввода отдельно.",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_muscle_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_muscle_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_muscle_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_muscle_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_muscle_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_muscle_mass": {
+    "text": "❌ Некорректный формат.\n\nВведите 5 чисел через пробел в порядке:\nЛР ПР ЛН ПН Т\n\nНапример:\n3.8 3.7 11.2 11.3 28.4\n\nили выберите сегмент ниже.",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_muscle_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_muscle_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_muscle_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_muscle_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_muscle_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_segment_muscle_mass_previous": {
+    "text": "💪 Укажите мышечную массу по сегментам.\n\nПоследнее измерение:\n{}\n\nВы можете скопировать эти значения или ввести новые.\n\nВведите 5 значений через пробел:\nЛР ПР ЛН ПН Т\n\nНапример:\n3.8 3.7 11.2 11.3 28.4",
+    "buttons": [
+      [
+        {
+          "text": "↩️ Скопировать последнее измерение",
+          "callback": "add_metric:segment_muscle_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_muscle_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_muscle_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_muscle_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_muscle_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_muscle_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_muscle_mass_previous": {
+    "text": "❌ Некорректный формат.\n\nПоследнее измерение:\n{}\n\nВведите 5 чисел через пробел в порядке:\nЛР ПР ЛН ПН Т\n\nНапример:\n3.8 3.7 11.2 11.3 28.4\n\nили воспользуйтесь кнопкой копирования.",
+    "buttons": [
+      [
+        {
+          "text": "↩️ Скопировать последнее измерение",
+          "callback": "add_metric:segment_muscle_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_muscle_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_muscle_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_muscle_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_muscle_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_muscle_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_segment_muscle_mass_edit": {
+    "text": "💪 Изменение мышечной массы по сегментам.\n\nТекущие значения:\n{}\n\nВы можете:\n• ввести все 5 значений через пробел:\nЛР ПР ЛН ПН Т\n\nНапример:\n3.8 3.7 11.2 11.3 28.4\n\n• или изменить отдельный сегмент.",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_muscle_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_muscle_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_muscle_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_muscle_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_muscle_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_muscle_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        },
+        {
+          "text": "✅ Готово",
+          "callback": "add_metric:save_segments"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_muscle_mass_edit": {
+    "text": "❌ Некорректный формат.\n\nТекущие значения:\n{}\n\nВведите 5 чисел через пробел в порядке:\nЛР ПР ЛН ПН Т\n\nНапример:\n3.8 3.7 11.2 11.3 28.4",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_muscle_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_muscle_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_muscle_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_muscle_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_muscle_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_muscle_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        },
+        {
+          "text": "✅ Готово",
+          "callback": "add_metric:save_segments"
+        }
+      ]
+    ]
+  },
+  "request_segment_fat_mass": {
+    "text": "🔥 Укажите жировую массу по сегментам.\n\nВы можете:\n• ввести 5 значений через пробел в порядке:\nЛР ПР ЛН ПН Т\n\nНапример:\n0.6 0.5 2.8 2.9 7.4\n\nили выбрать сегмент ниже для ввода отдельно.",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_fat_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_fat_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_fat_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_fat_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_fat_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_fat_mass": {
+    "text": "❌ Некорректный формат.\n\nВведите 5 чисел через пробел в порядке:\nЛР ПР ЛН ПН Т\n\nНапример:\n0.6 0.5 2.8 2.9 7.4\n\nили выберите сегмент ниже.",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_fat_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_fat_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_fat_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_fat_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_fat_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_segment_fat_mass_previous": {
+    "text": "🔥 Укажите жировую массу по сегментам.\n\nПоследнее измерение:\n{}\n\nВы можете скопировать эти значения или ввести новые.\n\nВведите 5 значений через пробел:\nЛР ПР ЛН ПН Т\n\nНапример:\n0.6 0.5 2.8 2.9 7.4",
+    "buttons": [
+      [
+        {
+          "text": "↩️ Скопировать последнее измерение",
+          "callback": "add_metric:segment_fat_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_fat_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_fat_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_fat_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_fat_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_fat_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_fat_mass_previous": {
+    "text": "❌ Некорректный формат.\n\nПоследнее измерение:\n{}\n\nВведите 5 чисел через пробел:\nЛР ПР ЛН ПН Т\n\nНапример:\n0.6 0.5 2.8 2.9 7.4\n\nили воспользуйтесь кнопкой копирования.",
+    "buttons": [
+      [
+        {
+          "text": "↩️ Скопировать последнее измерение",
+          "callback": "add_metric:segment_fat_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_fat_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_fat_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_fat_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_fat_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_fat_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "request_segment_fat_mass_edit": {
+    "text": "🔥 Изменение жировой массы по сегментам.\n\nТекущие значения:\n{}\n\nВы можете:\n• ввести все 5 значений через пробел:\nЛР ПР ЛН ПН Т\n\nНапример:\n0.6 0.5 2.8 2.9 7.4\n\n• или изменить отдельный сегмент.",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_fat_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_fat_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_fat_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_fat_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_fat_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_fat_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        },
+        {
+          "text": "✅ Готово",
+          "callback": "add_metric:save_segments"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_fat_mass_edit": {
+    "text": "❌ Некорректный формат.\n\nТекущие значения:\n{}\n\nВведите 5 чисел через пробел:\nЛР ПР ЛН ПН Т\n\nНапример:\n0.6 0.5 2.8 2.9 7.4",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_fat_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_fat_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_fat_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_fat_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_fat_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_fat_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        },
+        {
+          "text": "✅ Готово",
+          "callback": "add_metric:save_segments"
+        }
+      ]
+    ]
+  },
+  "request_segment_muscle_mass_value": {
+    "text": "💪 Укажите мышечную массу для сегмента: {}\n\nВведите значение в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_muscle_mass"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_muscle_mass_value": {
+    "text": "❌ Некорректная мышечная масса для сегмента: {}\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_muscle_mass"
+        }
+      ]
+    ]
+  },
+  "request_segment_muscle_mass_value_previous": {
+    "text": "💪 Укажите мышечную массу для сегмента: {}\n\nПоследнее значение: {} кг\n\nВведите новое значение или скопируйте предыдущее.",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:segment_muscle_mass_value_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_muscle_mass"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_muscle_mass_value_previous": {
+    "text": "❌ Некорректная мышечная масса для сегмента: {}\n\nПоследнее значение: {} кг\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:segment_muscle_mass_value_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_muscle_mass"
+        }
+      ]
+    ]
+  },
+  "request_segment_muscle_mass_value_edit": {
+    "text": "💪 Изменение мышечной массы для сегмента: {}\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_muscle_mass_value_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_muscle_mass"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_muscle_mass_value_edit": {
+    "text": "❌ Некорректная мышечная масса для сегмента: {}\n\nТекущее значение: {} кг\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_muscle_mass_value_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_muscle_mass"
+        }
+      ]
+    ]
+  },
+  "request_segment_fat_mass_value": {
+    "text": "🔥 Укажите жировую массу для сегмента: {}\n\nВведите значение в килограммах.\n\nНапример: 0.6",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_fat_mass_value": {
+    "text": "❌ Некорректная жировая масса для сегмента: {}\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 0.6",
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ]
+    ]
+  },
+  "request_segment_fat_mass_value_previous": {
+    "text": "🔥 Укажите жировую массу для сегмента: {}\n\nПоследнее значение: {} кг\n\nВведите новое значение или скопируйте предыдущее.",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:segment_fat_mass_value_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_fat_mass_value_previous": {
+    "text": "❌ Некорректная жировая масса для сегмента: {}\n\nПоследнее значение: {} кг\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 0.6",
+    "buttons": [
+      [
+        {
+          "text": "↩️ {} кг",
+          "callback": "add_metric:segment_fat_mass_value_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ]
+    ]
+  },
+  "request_segment_fat_mass_value_edit": {
+    "text": "🔥 Изменение жировой массы для сегмента: {}\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_fat_mass_value_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ]
+    ]
+  },
+  "invalid_segment_fat_mass_value_edit": {
+    "text": "❌ Некорректная жировая масса для сегмента: {}\n\nТекущее значение: {} кг\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 0.6",
+    "buttons": [
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_fat_mass_value_delete"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:segment_fat_mass"
+        }
+      ]
+    ]
+  },
+  "invalid_save_muscle_segments": {
+    "text": "❌ Не удалось завершить ввод.\n\nЗаполнены не все сегменты.\n\nТекущие значения:\n{}\n\nЗаполните оставшиеся.\nПосле этого нажмите «✅ Готово».",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_muscle_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_muscle_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_muscle_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_muscle_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_muscle_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_muscle_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "✅ Готово",
+          "callback": "add_metric:save_segments"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
+  },
+  "invalid_save_fat_segments": {
+    "text": "❌ Не удалось завершить ввод.\n\nЗаполнены не все сегменты.\n\nТекущие значения:\n{}\n\nЗаполните оставшиеся.\n\nПосле этого нажмите «✅ Готово».",
+    "buttons": [
+      [
+        {
+          "text": "💪 Левая рука",
+          "callback": "add_metric:segment_fat_mass:left_arm"
+        },
+        {
+          "text": "💪 Правая рука",
+          "callback": "add_metric:segment_fat_mass:right_arm"
+        }
+      ],
+      [
+        {
+          "text": "🦵 Левая нога",
+          "callback": "add_metric:segment_fat_mass:left_leg"
+        },
+        {
+          "text": "🦵 Правая нога",
+          "callback": "add_metric:segment_fat_mass:right_leg"
+        }
+      ],
+      [
+        {
+          "text": "🫁 Туловище",
+          "callback": "add_metric:segment_fat_mass:trunk"
+        }
+      ],
+      [
+        {
+          "text": "🗑️ Удалить",
+          "callback": "add_metric:segment_fat_mass_delete"
+        }
+      ],
+      [
+        {
+          "text": "✅ Готово",
+          "callback": "add_metric:save_segments"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "add_metric:additional"
+        }
+      ]
+    ]
   }
 }

@@ -24,14 +24,27 @@ enum class UserStates {
     InputMuscleMass,
     InputFatMass,
 
-    // input optional metrics
-    SelectOptionalMetrics,
+    MetricSummary,
+
+    // input additional metrics
+    SelectAdditionalMetrics,
     InputWaterMass,
     InputBoneMass,
     InputVisceralFat,
     InputProteinMass,
-    InputMuscleMassSegments,
-    InputFatMassSegments,
+    InputMuscleSegments,
+    InputFatSegments,
 
-    MetricSummary
+    // input segment value
+    InputLeftArmMuscle,
+    InputRightArmMuscle,
+    InputLeftLegMuscle,
+    InputRightLegMuscle,
+    InputTrunkMuscle,
+
+    InputLeftArmFat,
+    InputRightArmFat,
+    InputLeftLegFat,
+    InputRightLegFat,
+    InputTrunkFat,
 };

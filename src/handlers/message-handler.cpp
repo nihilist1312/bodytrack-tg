@@ -90,14 +90,14 @@ void MessageHandler::onAge(const TgBot::Message::Ptr& message,
 void MessageHandler::onDate(const TgBot::Message::Ptr& message,
                             UserSession& session) {
     spdlog::debug("Date handle");
-    if (setDate(session.new_body_metrics, message->text)) {
+    if (setDate(session.body_metrics_draft, message->text)) {
         // если запись с такой датой уже существует
         if (database_.getBodyMetricsByUserIdAndDate(
-                session.user_data->user_id, session.new_body_metrics.date)) {
+                session.user_data->user_id, session.body_metrics_draft.date)) {
             message_service_.doublicateDate(session);
             return;
         }
-        spdlog::debug("Set date: {}", session.new_body_metrics.date);
+        spdlog::debug("Set date: {}", session.body_metrics_draft.date);
         message_service_.requestWeight(session);
     } else {
         message_service_.invalidDate(session);
@@ -107,8 +107,8 @@ void MessageHandler::onDate(const TgBot::Message::Ptr& message,
 void MessageHandler::onWeight(const TgBot::Message::Ptr& message,
                               UserSession& session) {
     spdlog::debug("Weight handle");
-    if (setMass(session.new_body_metrics.weight, message->text)) {
-        spdlog::debug("Set weight: {}", session.new_body_metrics.weight);
+    if (setMass(session.body_metrics_draft.weight, message->text)) {
+        spdlog::debug("Set weight: {}", session.body_metrics_draft.weight);
         message_service_.requestHeight(session);
     } else {
         message_service_.invalidWeight(session);
@@ -118,8 +118,8 @@ void MessageHandler::onWeight(const TgBot::Message::Ptr& message,
 void MessageHandler::onHeight(const TgBot::Message::Ptr& message,
                               UserSession& session) {
     spdlog::debug("Height handle");
-    if (setHeight(session.new_body_metrics, message->text)) {
-        spdlog::debug("Set height: {}", session.new_body_metrics.height);
+    if (setHeight(session.body_metrics_draft, message->text)) {
+        spdlog::debug("Set height: {}", session.body_metrics_draft.height);
         message_service_.requestMuscleMass(session);
     } else {
         message_service_.invalidHeight(session);
@@ -129,9 +129,9 @@ void MessageHandler::onHeight(const TgBot::Message::Ptr& message,
 void MessageHandler::onMuscleMass(const TgBot::Message::Ptr& message,
                                   UserSession& session) {
     spdlog::debug("Muscle Mass handle");
-    if (setMass(session.new_body_metrics.muscle_mass, message->text)) {
+    if (setMass(session.body_metrics_draft.muscle_mass, message->text)) {
         spdlog::debug("Set muscle mass: {}",
-                      session.new_body_metrics.muscle_mass);
+                      session.body_metrics_draft.muscle_mass);
         message_service_.requestFatMass(session);
     } else {
         message_service_.invalidMuscleMass(session);
@@ -141,8 +141,8 @@ void MessageHandler::onMuscleMass(const TgBot::Message::Ptr& message,
 void MessageHandler::onFatMass(const TgBot::Message::Ptr& message,
                                UserSession& session) {
     spdlog::debug("Fat mass handle");
-    if (setMass(session.new_body_metrics.fat_mass, message->text)) {
-        spdlog::debug("Set fat mass: {}", session.new_body_metrics.fat_mass);
+    if (setMass(session.body_metrics_draft.fat_mass, message->text)) {
+        spdlog::debug("Set fat mass: {}", session.body_metrics_draft.fat_mass);
         message_service_.printSummary(session);
     } else {
         message_service_.invalidFatMass(session);

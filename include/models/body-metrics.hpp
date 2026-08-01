@@ -5,11 +5,11 @@
 #include <string>
 
 struct SegmentMass {
-    double left_arm;
-    double right_arm;
-    double left_leg;
-    double right_leg;
-    double trunk;
+    std::optional<double> left_arm;
+    std::optional<double> right_arm;
+    std::optional<double> left_leg;
+    std::optional<double> right_leg;
+    std::optional<double> trunk;
 };
 
 // храним данные о метриках тела пользователя в абсолютных значениях, kg, cm
@@ -30,7 +30,7 @@ struct BodyMetrics {
     std::optional<double> water_mass;
     std::optional<double> bone_mass;
     // value from 1 to 10, where 1 is the lowest and 10 is the highest
-    std::optional<uint8_t> visceral_fat;
+    std::optional<int> visceral_fat;
     std::optional<double> protein_mass;
 
     // segment mass
@@ -45,3 +45,10 @@ double fatPercentage(const BodyMetrics& metric) noexcept;
 bool setDate(BodyMetrics& target, const std::string& text);
 bool setMass(double& target, std::string_view text) noexcept;
 bool setHeight(BodyMetrics& target, std::string_view text) noexcept;
+
+// true, if have someone additional metric
+[[nodiscard]]
+bool haveAdditional(const BodyMetrics& metrics) noexcept;
+
+[[nodiscard]]
+bool allSegmetsFilled(const std::optional<SegmentMass>& segments) noexcept;

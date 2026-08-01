@@ -13,7 +13,7 @@ BodyMetrics getBodyMetricsFromRow(const SQLite::Statement& query) {
     metrics.date = query.getColumn("date").getString();
     metrics.weight = query.getColumn("weight").getDouble();
     metrics.height = query.getColumn("height").getDouble();
-    metrics.age = static_cast<uint8_t>(query.getColumn("age").getInt());
+    metrics.age = query.getColumn("age").getInt();
     metrics.muscle_mass = query.getColumn("muscle_mass").getDouble();
     metrics.fat_mass = query.getColumn("body_fat_mass").getDouble();
 
@@ -24,8 +24,7 @@ BodyMetrics getBodyMetricsFromRow(const SQLite::Statement& query) {
         metrics.bone_mass = query.getColumn("bone_mass").getDouble();
     }
     if (!query.getColumn("visceral_fat").isNull()) {
-        metrics.visceral_fat =
-            static_cast<uint8_t>(query.getColumn("visceral_fat").getInt());
+        metrics.visceral_fat = query.getColumn("visceral_fat").getInt();
     }
     if (!query.getColumn("protein_mass").isNull()) {
         metrics.protein_mass = query.getColumn("protein_mass").getDouble();
@@ -63,7 +62,7 @@ UserData getUserDataFromRow(const SQLite::Statement& query) {
     UserData user_data;
     user_data.user_id = query.getColumn("user_id").getInt64();
     user_data.user_name = query.getColumn("user_name").getString();
-    user_data.age = static_cast<uint8_t>(query.getColumn("age").getInt());
+    user_data.age = query.getColumn("age").getInt();
     user_data.sex = static_cast<Sex>(query.getColumn("sex").getInt());
 
     return user_data;
@@ -106,11 +105,11 @@ void bindBodyMetricsToStatement(SQLite::Statement& query,
     if (body_metrics.segment_muscle_mass.has_value()) {
         const SegmentMass& muscleSegments =
             body_metrics.segment_muscle_mass.value();
-        query.bind(12, muscleSegments.left_arm);
-        query.bind(13, muscleSegments.right_arm);
-        query.bind(14, muscleSegments.left_leg);
-        query.bind(15, muscleSegments.right_leg);
-        query.bind(16, muscleSegments.trunk);
+        query.bind(12, muscleSegments.left_arm.value());
+        query.bind(13, muscleSegments.right_arm.value());
+        query.bind(14, muscleSegments.left_leg.value());
+        query.bind(15, muscleSegments.right_leg.value());
+        query.bind(16, muscleSegments.trunk.value());
     } else {
         for (int i = 12; i <= 16; ++i) {
             query.bind(i); // bind NULL
@@ -120,11 +119,11 @@ void bindBodyMetricsToStatement(SQLite::Statement& query,
     if (body_metrics.segment_fat_mass.has_value()) {
         const SegmentMass& segment_fat_mass =
             body_metrics.segment_fat_mass.value();
-        query.bind(17, segment_fat_mass.left_arm);
-        query.bind(18, segment_fat_mass.right_arm);
-        query.bind(19, segment_fat_mass.left_leg);
-        query.bind(20, segment_fat_mass.right_leg);
-        query.bind(21, segment_fat_mass.trunk);
+        query.bind(17, segment_fat_mass.left_arm.value());
+        query.bind(18, segment_fat_mass.right_arm.value());
+        query.bind(19, segment_fat_mass.left_leg.value());
+        query.bind(20, segment_fat_mass.right_leg.value());
+        query.bind(21, segment_fat_mass.trunk.value());
     } else {
         for (int i = 17; i <= 21; ++i) {
             query.bind(i); // bind NULL

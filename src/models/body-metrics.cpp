@@ -48,3 +48,16 @@ bool setHeight(BodyMetrics& target, std::string_view text) noexcept {
     target.height = res.value();
     return true;
 }
+
+[[nodiscard]]
+bool haveAdditional(const BodyMetrics& metric) noexcept {
+    return (metric.water_mass || metric.bone_mass || metric.visceral_fat ||
+            metric.protein_mass || metric.segment_muscle_mass ||
+            metric.segment_fat_mass);
+}
+
+[[nodiscard]] bool
+allSegmetsFilled(const std::optional<SegmentMass>& segments) noexcept {
+    return (segments && segments->left_arm && segments->right_arm &&
+            segments->left_leg && segments->right_leg && segments->trunk);
+}

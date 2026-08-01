@@ -29,6 +29,7 @@ class MessageService {
     void deleteLast(UserSession& session);
 
     // message printer
+
     void openMainMenu(UserSession& session);
 
     void requestDate(UserSession& session);
@@ -44,7 +45,52 @@ class MessageService {
     void invalidFatMass(UserSession& session);
     void doublicateDate(UserSession& session);
 
+    // сводка основных метрик
     void printSummary(UserSession& session);
+
+    // выбор доп метрики для редактирования
+    void selectAdditional(UserSession& session);
+
+    void requestWaterMass(UserSession& session);
+    void requestBoneMass(UserSession& session);
+    void requestVisceralFat(UserSession& session);
+    void requestProteinMass(UserSession& session);
+    void requestMuscleSegment(UserSession& session);
+    void requestFatSegment(UserSession& session);
+
+    void invalidBoneMass(UserSession& session);
+    void invalidWaterMass(UserSession& session);
+    void invalidVisceralFat(UserSession& session);
+    void invalidProteinMass(UserSession& session);
+    void invalidMuscleSegment(UserSession& session);
+    void invalidFatSegment(UserSession& session);
+
+    void requestLeftArmMuscle(UserSession& session);
+    void requestRightArmMuscle(UserSession& session);
+    void requestLeftLegMuscle(UserSession& session);
+    void requestRightLegMuscle(UserSession& session);
+    void requestTrunkMuscle(UserSession& session);
+
+    void invalidLeftArmMuscle(UserSession& session);
+    void invalidRightArmMuscle(UserSession& session);
+    void invalidLeftLegMuscle(UserSession& session);
+    void invalidRightLegMuscle(UserSession& session);
+    void invalidTrunkMuscle(UserSession& session);
+
+    void requestLeftArmFat(UserSession& session);
+    void requestRightArmFat(UserSession& session);
+    void requestLeftLegFat(UserSession& session);
+    void requestRightLegFat(UserSession& session);
+    void requestTrunkFat(UserSession& session);
+
+    void invalidLeftArmFat(UserSession& session);
+    void invalidRightArmFat(UserSession& session);
+    void invalidLeftLegFat(UserSession& session);
+    void invalidRightLegFat(UserSession& session);
+    void invalidTrunkFat(UserSession& session);
+
+    void cannotSaveMuscleSegments(UserSession& session);
+    void cannotSaveFatSegments(UserSession& session);
 
   private:
     TgBot::Bot& bot_;
@@ -52,4 +98,26 @@ class MessageService {
     Database& database_;
 
     MessageData loadMessage(const MessageTemplate& message);
+
+    // Универсальный хелпер для request_*/invalid_* простых (несегментных)
+    // метрик
+    template <class T>
+    void requestSimpleMetric(UserSession& session,
+                             std::optional<T> BodyMetrics::* field,
+                             UserStates state,
+                             const std::string& base_message_key,
+                             const std::string& log_label, bool is_invalid);
+
+    void requestSegmentGroup(UserSession& session,
+                             std::optional<SegmentMass> BodyMetrics::* field,
+                             UserStates state,
+                             const std::string& base_message_key,
+                             const std::string& log_label);
+
+    // Универсальный хелпер для request_* и invalid_* сообщений по сегментам
+    // массы
+    void requestSegment(UserSession& session, const std::string& segment_name,
+                        std::optional<SegmentMass> BodyMetrics::* metrics_field,
+                        std::optional<double> SegmentMass::* field,
+                        UserStates state, const std::string& base_message_key);
 };
