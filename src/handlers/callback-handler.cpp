@@ -318,9 +318,7 @@ void CallbackHandler::onMainMenu(const TgBot::CallbackQuery::Ptr& query) {
     spdlog::debug("Main menu callback handle. User {}",
                   session.user_data->user_id);
     if (query->data.ends_with("add_record")) {
-        spdlog::debug("Add record");
-        message_service_.editMessage(session, {"add_record"});
-        session.current_state = UserStates::AddMetricSelectMode;
+        message_service_.addRecord(session);
     } else {
         spdlog::debug("Incorrect collback");
         return;

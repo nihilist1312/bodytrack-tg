@@ -31,6 +31,7 @@ class MessageService {
     // message printer
 
     void openMainMenu(UserSession& session);
+    void addRecord(UserSession& session);
 
     void requestDate(UserSession& session);
     void requestWeight(UserSession& session);
