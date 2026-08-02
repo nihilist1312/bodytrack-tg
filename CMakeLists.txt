@@ -24,8 +24,9 @@ add_executable(bodytrack-tg
     src/config.cpp
     src/database.cpp
     src/message-loader.cpp
-    src/utils/placeholders.cpp
+    src/utils/formatting.cpp
     src/utils/input_parser.cpp
+    src/validation/body-metrics-validator.cpp
     src/logger.cpp
     src/utils/date.cpp
     src/utils/conversions.cpp

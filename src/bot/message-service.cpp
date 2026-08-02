@@ -608,3 +608,9 @@ void MessageService::cannotSaveFatSegments(UserSession& session) {
                           {segmentMassFormat(session.segment_mass_draft)}});
     session.current_state = UserStates::InputFatSegments;
 }
+
+void MessageService::addRecord(UserSession& session) {
+    spdlog::debug("Add record");
+    editMessage(session, {"add_record"});
+    session.current_state = UserStates::AddMetricSelectMode;
+}
