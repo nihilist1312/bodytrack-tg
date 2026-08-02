@@ -466,6 +466,8 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         // инициализируем черновик
         session.segment_mass_draft =
             session.body_metrics_draft.segment_muscle_mass;
+        if (!session.segment_mass_draft)
+            session.segment_mass_draft = {};
         message_service_.requestMuscleSegment(session);
         return;
     }
@@ -476,6 +478,8 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         // инициализируем черновик
         session.segment_mass_draft =
             session.body_metrics_draft.segment_fat_mass;
+        if (!session.segment_mass_draft)
+            session.segment_mass_draft = {};
         message_service_.requestFatSegment(session);
         return;
     }
