@@ -3,6 +3,7 @@
 #include "utils/conversions.hpp"
 #include "utils/date.hpp"
 
+#include <optional>
 #include <regex>
 
 [[nodiscard]] double fatPercentage(const BodyMetrics& metric) noexcept {
@@ -36,6 +37,19 @@ bool setMass(double& target, std::string_view text) noexcept {
         return false;
     target = res.value();
     return true;
+}
+
+// версия с возвратом
+[[nodiscard]]
+std::optional<double> setMass(std::string_view text) noexcept {
+    std::optional<double> res = strToDouble(text);
+    if (!res)
+        return std::nullopt;
+    // ошибка в значении
+    if (res <= 0. || res > 500.)
+        return std::nullopt;
+
+    return res;
 }
 
 bool setHeight(BodyMetrics& target, std::string_view text) noexcept {

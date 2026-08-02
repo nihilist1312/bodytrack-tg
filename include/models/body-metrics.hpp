@@ -46,6 +46,8 @@ bool setDate(BodyMetrics& target, const std::string& text);
 bool setMass(double& target, std::string_view text) noexcept;
 bool setHeight(BodyMetrics& target, std::string_view text) noexcept;
 
+[[nodiscard]] std::optional<double> setMass(std::string_view text) noexcept;
+
 // true, if have someone additional metric
 [[nodiscard]]
 bool haveAdditional(const BodyMetrics& metrics) noexcept;
