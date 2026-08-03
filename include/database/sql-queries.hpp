@@ -59,6 +59,17 @@ CREATE TABLE IF NOT EXISTS body_metrics (
     constexpr auto getBodyMetricsByUserIdAndDate =
         "SELECT * FROM body_metrics WHERE user_id = ? AND date = ?;";
 
+    constexpr auto getBodyMetricsHistoryPage = R"(
+        SELECT id, user_id, date, weight, height, age, muscle_mass, body_fat_mass,
+               water_mass, bone_mass, visceral_fat, protein_mass,
+               muscle_left_arm, muscle_right_arm, muscle_left_leg, muscle_right_leg, muscle_trunk,
+               fat_left_arm, fat_right_arm, fat_left_leg, fat_right_leg, fat_trunk
+        FROM body_metrics
+        WHERE user_id = ?
+        ORDER BY date DESC, id DESC
+        LIMIT ? OFFSET ?;
+    )";
+
     // modifiers
     constexpr auto addUser = "INSERT OR IGNORE INTO users (user_id, user_name, "
                              "age, sex) VALUES (?, ?, ?, ?);";

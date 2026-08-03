@@ -98,6 +98,8 @@ class MessageService {
     void cannotSaveMuscleSegments(UserSession& session);
     void cannotSaveFatSegments(UserSession& session);
 
+    void historyScreen(UserSession& session);
+
   private:
     TgBot::Bot& bot_;
     MessageLoader& message_loader_;

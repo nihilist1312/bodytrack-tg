@@ -174,6 +174,26 @@ std::optional<BodyMetrics> Database::getBodyMetricsById(int64_t id) const {
     }
 }
 
+std::vector<BodyMetrics>
+Database::getBodyMetricsHistory(int64_t user_id, int offset, int limit) const {
+    spdlog::debug(
+        "Database. Get body metrics history for user {} (limit={}, offset={})",
+        user_id, limit, offset);
+    SQLite::Statement query(db, SQLQuery::getBodyMetricsHistoryPage);
+    query.bind(1, user_id);
+    query.bind(2, limit);
+    query.bind(3, offset);
+
+    std::vector<BodyMetrics> result;
+    while (query.executeStep()) {
+        result.push_back(getBodyMetricsFromRow(query));
+    }
+
+    spdlog::debug("Database. Found {} metrics for user {}", result.size(),
+                  user_id);
+    return result;
+}
+
 std::optional<BodyMetrics>
 Database::getBodyMetricsByUserIdAndDate(int64_t user_id,
                                         const std::string& date) const {

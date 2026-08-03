@@ -1,14 +1,14 @@
 #pragma once
 
+#include "models/body-metrics.hpp"
+#include "models/user-data.hpp"
+
 #include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include <SQLiteCpp/SQLiteCpp.h>
-
-#include "models/body-metrics.hpp"
-#include "models/user-data.hpp"
 
 class Database {
   public:
@@ -18,9 +18,13 @@ class Database {
     // getters
     std::optional<BodyMetrics> getLastBodyMetrics(int64_t user_id) const;
     std::optional<BodyMetrics> getBodyMetricsById(int64_t id) const;
-    std::optional<BodyMetrics> getBodyMetricsByUserIdAndDate(int64_t user_id,
-                                                             const std::string& date) const;
+    std::optional<BodyMetrics>
+    getBodyMetricsByUserIdAndDate(int64_t user_id,
+                                  const std::string& date) const;
     std::vector<BodyMetrics> getBodyMetricsHistory(int64_t user_id) const;
+    // Получить limit записей начиная с offset
+    std::vector<BodyMetrics> getBodyMetricsHistory(int64_t user_id, int offset,
+                                                   int limit = 10) const;
     std::optional<UserData> getUserData(int64_t user_id) const;
 
     // modifiers
@@ -29,10 +33,12 @@ class Database {
     bool editUserData(int64_t user_id, const UserData& user_data);
     // edit by id of the record in the Database, not by user id
     bool editBodyMetricsById(int64_t id, const BodyMetrics& body_metrics);
-    bool editBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date,
+    bool editBodyMetricsByUserIdAndDate(int64_t user_id,
+                                        const std::string& date,
                                         const BodyMetrics& body_metrics);
     bool deleteBodyMetricsById(int64_t id);
-    bool deleteBodyMetricsByUserIdAndDate(int64_t user_id, const std::string& date);
+    bool deleteBodyMetricsByUserIdAndDate(int64_t user_id,
+                                          const std::string& date);
     bool deleteUser(int64_t user_id);
 
   private:
