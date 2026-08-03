@@ -1,0 +1,444 @@
+{
+    "additional_metrics": {
+        "text": "📊 Дополнительные показатели\n\n💧 Вода: {}\n🦴 Костная масса: {}\n🫀 Висцеральный жир: {}\n🥩 Белок: {}\n\n💪 Мышечная масса по сегментам\n{}\n\n🔥 Жировая масса по сегментам\n{}\n\nВыберите показатель, который хотите добавить или изменить.",
+        "buttons": [
+            [
+                {
+                    "text": "💧 Вода",
+                    "callback": "add_metric:water_mass"
+                },
+                {
+                    "text": "🦴 Кости",
+                    "callback": "add_metric:bone_mass"
+                }
+            ],
+            [
+                {
+                    "text": "🫀 Висцеральный жир",
+                    "callback": "add_metric:visceral_fat"
+                },
+                {
+                    "text": "🥩 Белок",
+                    "callback": "add_metric:protein_mass"
+                }
+            ],
+            [
+                {
+                    "text": "💪 Мышцы",
+                    "callback": "add_metric:segment_muscle_mass"
+                },
+                {
+                    "text": "🔥 Жир",
+                    "callback": "add_metric:segment_fat_mass"
+                }
+            ],
+            [
+                {
+                    "text": "💾 Сохранить запись",
+                    "callback": "add_metric:save"
+                }
+            ]
+        ]
+    },
+    "additional_metrics_empty": {
+        "text": "📊 Дополнительные показатели\n\nВыберите показатель, который хотите добавить.\n\nЭти данные необязательны, но помогут получить более подробный анализ состава тела.",
+        "buttons": [
+            [
+                {
+                    "text": "💧 Вода",
+                    "callback": "add_metric:water_mass"
+                },
+                {
+                    "text": "🦴 Костная масса",
+                    "callback": "add_metric:bone_mass"
+                }
+            ],
+            [
+                {
+                    "text": "🫀 Висцеральный жир",
+                    "callback": "add_metric:visceral_fat"
+                },
+                {
+                    "text": "🥩 Белок",
+                    "callback": "add_metric:protein_mass"
+                }
+            ],
+            [
+                {
+                    "text": "💪 Мышцы",
+                    "callback": "add_metric:segment_muscle_mass"
+                },
+                {
+                    "text": "🔥 Жир",
+                    "callback": "add_metric:segment_fat_mass"
+                }
+            ],
+            [
+                {
+                    "text": "💾 Сохранить запись",
+                    "callback": "add_metric:save"
+                }
+            ]
+        ]
+    },
+    "request_water_mass": {
+        "text": "💧 Укажите массу воды в организме в килограммах.\n\nНапример: 42.1",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_water_mass": {
+        "text": "❌ Некорректная масса воды.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 42.1",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_water_mass_previous": {
+        "text": "💧 Укажите массу воды в организме в килограммах.\n\nНапример: 42.1",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {} кг",
+                    "callback": "add_metric:water_mass_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_water_mass_previous": {
+        "text": "❌ Некорректная масса воды.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 42.1",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {} кг",
+                    "callback": "add_metric:water_mass_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_water_mass_edit": {
+        "text": "💧 Укажите массу воды в организме в килограммах.\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:water_mass_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_water_mass_edit": {
+        "text": "❌ Некорректная масса воды.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 42.1",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:water_mass_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_bone_mass": {
+        "text": "🦴 Укажите костную массу в килограммах.\n\nНапример: 3.8",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_bone_mass": {
+        "text": "❌ Некорректная костная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_bone_mass_previous": {
+        "text": "🦴 Укажите костную массу в килограммах.\n\nНапример: 3.8",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {} кг",
+                    "callback": "add_metric:bone_mass_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_bone_mass_previous": {
+        "text": "❌ Некорректная костная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {} кг",
+                    "callback": "add_metric:bone_mass_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_bone_mass_edit": {
+        "text": "🦴 Укажите костную массу в килограммах.\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:bone_mass_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_bone_mass_edit": {
+        "text": "❌ Некорректная костная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 3.8",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:bone_mass_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_visceral_fat": {
+        "text": "🫀 Укажите уровень висцерального жира.\n\nВведите число от 1 до 10.\n\nНапример: 5",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_visceral_fat": {
+        "text": "❌ Некорректный уровень висцерального жира.\n\nПожалуйста, введите целое число от 1 до 10.\n\nНапример: 5",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_visceral_fat_previous": {
+        "text": "🫀 Укажите уровень висцерального жира.\n\nВведите число от 1 до 10.\n\nНапример: 5",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {}",
+                    "callback": "add_metric:visceral_fat_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_visceral_fat_previous": {
+        "text": "❌ Некорректный уровень висцерального жира.\n\nПожалуйста, введите целое число от 1 до 10.\n\nНапример: 5",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {}",
+                    "callback": "add_metric:visceral_fat_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_visceral_fat_edit": {
+        "text": "🫀 Укажите уровень висцерального жира.\n\nТекущее значение: {}\n\nВведите новое значение или удалите существующее.",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:visceral_fat_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_visceral_fat_edit": {
+        "text": "❌ Некорректный уровень висцерального жира.\n\nПожалуйста, введите целое число от 1 до 10.\n\nНапример: 5",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:visceral_fat_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_protein_mass": {
+        "text": "🥩 Укажите белковую массу в килограммах.\n\nНапример: 14.8",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_protein_mass": {
+        "text": "❌ Некорректная белковая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.8",
+        "buttons": [
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_protein_mass_previous": {
+        "text": "🥩 Укажите белковую массу в килограммах.\n\nНапример: 14.8",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {} кг",
+                    "callback": "add_metric:protein_mass_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_protein_mass_previous": {
+        "text": "❌ Некорректная белковая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.8",
+        "buttons": [
+            [
+                {
+                    "text": "↩️ {} кг",
+                    "callback": "add_metric:protein_mass_previous"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "request_protein_mass_edit": {
+        "text": "🥩 Укажите белковую массу в килограммах.\n\nТекущее значение: {} кг\n\nВведите новое значение или удалите существующее.",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:protein_mass_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    },
+    "invalid_protein_mass_edit": {
+        "text": "❌ Некорректная белковая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.8",
+        "buttons": [
+            [
+                {
+                    "text": "🗑️ Удалить",
+                    "callback": "add_metric:protein_mass_delete"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:additional"
+                }
+            ]
+        ]
+    }
+}

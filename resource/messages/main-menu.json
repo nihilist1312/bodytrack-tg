@@ -1,0 +1,85 @@
+{
+    "main_menu": {
+        "text": "💪 BodyTrack\n\nПривет, {}! 👋\n\nТвои текущие показатели:\n\n⚖️ Вес\n{} кг\n\n🔥 Процент жира\n{}%\n\n💪 Мышечная масса\n{} кг\n\n━━━━━━━━━━━━━━\n\n📅 Последняя запись:\n{}\n\nПродолжай отслеживать свой прогресс 🚀",
+        "buttons": [
+            [
+                {
+                    "text": "📝 Записать показатели",
+                    "callback": "main_menu:add_record"
+                }
+            ],
+            [
+                {
+                    "text": "📊 Открыть статистику",
+                    "callback": "main_menu:statistics"
+                },
+                {
+                    "text": "📅 История",
+                    "callback": "main_menu:history"
+                }
+            ],
+            [
+                {
+                    "text": "🎯 Проверить цель",
+                    "callback": "main_menu:goals"
+                },
+                {
+                    "text": "⚙️ Настройки",
+                    "callback": "main_menu:settings"
+                }
+            ]
+        ]
+    },
+    "empty_menu": {
+        "text": "💪 BODYTRACK\n\nДобро пожаловать!\n\nОтслеживайте изменения состава тела, записывайте показатели и следите за своим прогрессом.",
+        "buttons": [
+            [
+                {
+                    "text": "📝 Записать показатели",
+                    "callback": "main_menu:add_record"
+                }
+            ],
+            [
+                {
+                    "text": "📊 Статистика",
+                    "callback": "main_menu:statistics"
+                },
+                {
+                    "text": "📅 История",
+                    "callback": "main_menu:history"
+                }
+            ],
+            [
+                {
+                    "text": "🎯 Моя цель",
+                    "callback": "main_menu:goals"
+                },
+                {
+                    "text": "⚙️ Настройки",
+                    "callback": "main_menu:settings"
+                }
+            ]
+        ]
+    },
+    "add_record": {
+        "text": "📝 Добавление записи\n\nВыберите способ добавления данных.",
+        "buttons": [
+            [
+                {
+                    "text": "📄 Из файла",
+                    "callback": "add_metric:file_mode"
+                },
+                {
+                    "text": "✍️ Вручную",
+                    "callback": "add_metric:manually"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "back"
+                }
+            ]
+        ]
+    }
+}
