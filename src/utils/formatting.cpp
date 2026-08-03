@@ -2,12 +2,11 @@
 
 #include "utils/conversions.hpp"
 
+#include <cstddef>
 #include <string>
 #include <string_view>
 #include <variant>
 #include <vector>
-
-using PlaceholderValue = std::variant<int, double, std::string>;
 
 namespace {
     // overloaded - класс с множествнной перегрузкой оператора (),
@@ -35,7 +34,8 @@ void formatInplace(std::string& text,
         std::string str = std::visit(
             overloaded{[](int v) { return std::to_string(v); },
                        [](double v) { return doubleToStr(v); },
-                       [](std::string_view v) { return std::string(v); }},
+                       [](std::string_view v) { return std::string(v); },
+                       [](size_t v) { return std::to_string(v); }},
             elem);
         text.replace(pos, 2, str);
         pos += str.size(); // сдвигаемся за вставленную строку

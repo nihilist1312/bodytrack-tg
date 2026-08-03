@@ -2,10 +2,12 @@
 
 #include "bot/user-session.hpp"
 #include "models/body-metrics.hpp"
+#include "types/message-data.hpp"
 #include "types/message-template.hpp"
 #include "types/user-states.hpp"
 #include "utils/date.hpp"
 #include "utils/formatting.hpp"
+#include "utils/utils.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -160,6 +162,9 @@ void MessageService::openMainMenu(UserSession& session) {
         spdlog::debug("Open without data");
         editMessage(session, {"empty_menu"});
     }
+    session.body_metrics_draft = {};
+    session.segment_mass_draft = std::nullopt;
+    session.history_offset = 0;
     session.current_state = UserStates::MainMenu;
 }
 
@@ -637,4 +642,128 @@ void MessageService::requestSex(UserSession& session) {
     spdlog::debug("Request sex");
     editMessage(session, {"request_gender"});
     session.current_state = UserStates::InputUserSex;
+}
+
+void MessageService::historyScreen(UserSession& session) {
+    static constexpr size_t kPageSize = 10;
+    spdlog::debug("History print");
+    session.current_state = UserStates::HistoryPage;
+
+    // ---- Определение шаблонов кнопок ---------------------------------------
+    static const auto text_message_temp =
+        message_loader_.getMessage("history_screen")["text"].get<std::string>();
+
+    static const auto metric_btn =
+        message_loader_.getMessage("history_screen")["buttons"]["metric"];
+    static const auto metric_text = metric_btn["text"].get<std::string>();
+    static const auto metric_data = metric_btn["callback"].get<std::string>();
+
+    static const auto main_menu_btn =
+        message_loader_.getMessage("history_screen")["buttons"]["main_menu"];
+    static const auto main_menu_text = main_menu_btn["text"].get<std::string>();
+    static const auto main_menu_data =
+        main_menu_btn["callback"].get<std::string>();
+
+    static const auto previous_btn =
+        message_loader_.getMessage("history_screen")["buttons"]["previous"];
+    static const auto previous_text = previous_btn["text"].get<std::string>();
+    static const auto previous_data =
+        previous_btn["callback"].get<std::string>();
+
+    static const auto next_btn =
+        message_loader_.getMessage("history_screen")["buttons"]["next"];
+    static const auto next_text = next_btn["text"].get<std::string>();
+    static const auto next_data = next_btn["callback"].get<std::string>();
+
+    static const auto count_btn =
+        message_loader_.getMessage("history_screen")["buttons"]["count"];
+    static const auto count_text = count_btn["text"].get<std::string>();
+    static const auto count_data = count_btn["callback"].get<std::string>();
+    // ------------------------------------------------------------------------
+
+    size_t metrics_count =
+        database_.getBodyMetricsCount(session.user_data->user_id);
+
+    // Если записей нет
+    if (metrics_count == 0) {
+        spdlog::debug("Empty history");
+        editMessage(session, {"history_empty"});
+        return;
+    }
+
+    std::string text_message = format(text_message_temp, {metrics_count});
+    auto keyboard = std::make_shared<TgBot::InlineKeyboardMarkup>();
+
+    auto metrics = database_.getBodyMetricsHistory(
+        session.user_data->user_id, session.history_offset * kPageSize);
+    for (const auto& metric : metrics) {
+        auto button_ptr = std::make_shared<TgBot::InlineKeyboardButton>();
+        button_ptr->text = format(metric_text, {metric.date});
+        button_ptr->callbackData = format(metric_data, {metric.date});
+        keyboard->inlineKeyboard.push_back({button_ptr});
+    }
+
+    size_t total_page = ceil_div<size_t>(metrics_count, kPageSize);
+    if (total_page > 1) {
+        // если открыта 1 страницы
+        std::vector<TgBot::InlineKeyboardButton::Ptr> buttons_row;
+
+        if (session.history_offset > 0) {
+            auto btn = std::make_shared<TgBot::InlineKeyboardButton>();
+            btn->text = previous_text;
+            btn->callbackData = previous_data;
+            buttons_row.push_back(btn);
+        }
+
+        auto count_btn_ptr = std::make_shared<TgBot::InlineKeyboardButton>();
+        count_btn_ptr->text =
+            format(count_text, {session.history_offset + 1, total_page});
+        count_btn_ptr->callbackData = count_data;
+        buttons_row.push_back(count_btn_ptr);
+
+        if (session.history_offset + 1 < total_page) {
+            auto btn = std::make_shared<TgBot::InlineKeyboardButton>();
+            btn->text = next_text;
+            btn->callbackData = next_data;
+            buttons_row.push_back(btn);
+        }
+
+        keyboard->inlineKeyboard.push_back(buttons_row);
+    }
+
+    auto button_ptr = std::make_shared<TgBot::InlineKeyboardButton>();
+    button_ptr->text = main_menu_text;
+    button_ptr->callbackData = main_menu_data;
+    keyboard->inlineKeyboard.push_back({button_ptr});
+
+    editMessage(session, text_message, keyboard);
+}
+
+void MessageService::editMessage(
+    UserSession& session, const std::string& text,
+    const std::shared_ptr<TgBot::InlineKeyboardMarkup>& keyboard) {
+    spdlog::debug("Edit message: Chat ID {}, Message ID {}.", session.chat_id,
+                  session.last_message_id);
+    session.last_message_template = {};
+    if (session.last_message_id == 0) {
+        spdlog::debug("Cannot edit message with ID 0. Send new");
+        sendMessage(session, {}, MessageData{text, keyboard});
+        return;
+    }
+    try {
+        bot_.getApi().editMessageText(text, session.chat_id,
+                                      session.last_message_id, "", "", nullptr,
+                                      keyboard);
+        spdlog::debug("Edited successfully");
+    } catch (const TgBot::TgException& e) {
+        std::string_view error_message = e.what();
+        if (error_message.find("message is not modified") !=
+            std::string::npos) {
+            spdlog::debug("Message is not modified");
+            return;
+        }
+
+        spdlog::debug("Edited failed. What: {}. Try send", e.what());
+        sendMessage(session, {}, MessageData{text, keyboard});
+    }
 }

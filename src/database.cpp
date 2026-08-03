@@ -2,6 +2,7 @@
 
 #include "database/sql-queries.hpp"
 
+#include <cstddef>
 #include <optional>
 
 #include <spdlog/spdlog.h>
@@ -192,6 +193,17 @@ Database::getBodyMetricsHistory(int64_t user_id, int offset, int limit) const {
     spdlog::debug("Database. Found {} metrics for user {}", result.size(),
                   user_id);
     return result;
+}
+
+size_t Database::getBodyMetricsCount(int64_t user_id) const {
+    spdlog::debug("Database. Get body metrics count for user {}", user_id);
+    SQLite::Statement query(db, SQLQuery::getBodyMetricsCount);
+    query.bind(1, user_id);
+
+    if (query.executeStep()) {
+        return query.getColumn(0).getInt64();
+    }
+    return 0;
 }
 
 std::optional<BodyMetrics>

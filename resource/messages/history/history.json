@@ -1,0 +1,44 @@
+{
+    "history_screen": {
+        "text": "📚 История измерений\n\nВыберите запись, чтобы просмотреть подробную информацию или изменить её.\n\nВсего записей: {}",
+        "buttons": {
+            "metric": {
+                "text": "📅 {}",
+                "callback": "history:view:{}"
+            },
+            "previous": {
+                "text": "◀️",
+                "callback": "history:previous"
+            },
+            "next": {
+                "text": "▶️",
+                "callback": "history:next"
+            },
+            "main_menu": {
+                "text": "⬅️ Главное меню",
+                "callback": "cancel"
+            },
+            "count": {
+                "text": "{}/{}",
+                "callback": "history:none"
+            }
+        }
+    },
+    "history_empty": {
+        "text": "📚 История измерений\n\nУ вас пока нет сохранённых измерений.\n\nДобавьте первую запись, чтобы начать отслеживать изменения состава тела.",
+        "buttons": [
+            [
+                {
+                    "text": "➕ Добавить запись",
+                    "callback": "add_metric"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Главное меню",
+                    "callback": "cancel"
+                }
+            ]
+        ]
+    }
+}

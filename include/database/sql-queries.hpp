@@ -58,7 +58,6 @@ CREATE TABLE IF NOT EXISTS body_metrics (
         "SELECT * FROM body_metrics WHERE id = ?;";
     constexpr auto getBodyMetricsByUserIdAndDate =
         "SELECT * FROM body_metrics WHERE user_id = ? AND date = ?;";
-
     constexpr auto getBodyMetricsHistoryPage = R"(
         SELECT id, user_id, date, weight, height, age, muscle_mass, body_fat_mass,
                water_mass, bone_mass, visceral_fat, protein_mass,
@@ -68,6 +67,9 @@ CREATE TABLE IF NOT EXISTS body_metrics (
         WHERE user_id = ?
         ORDER BY date DESC, id DESC
         LIMIT ? OFFSET ?;
+    )";
+    constexpr auto getBodyMetricsCount = R"(
+        SELECT COUNT(*) FROM body_metrics WHERE user_id = ?;
     )";
 
     // modifiers

@@ -24,6 +24,9 @@ class MessageService {
                      const MessageData& message_data);
     void editMessage(UserSession& session,
                      const MessageTemplate& message_template);
+    void
+    editMessage(UserSession& session, const std::string& text,
+                const std::shared_ptr<TgBot::InlineKeyboardMarkup>& keyboard);
     void deleteMessage(const TgBot::Message::Ptr& message);
     void deleteMessage(int64_t chat_id, int32_t message_id);
     void deleteLast(UserSession& session);

@@ -47,4 +47,7 @@ enum class UserStates {
     InputLeftLegFat,
     InputRightLegFat,
     InputTrunkFat,
+
+    // ---- История -----------------------------------------------------------
+    HistoryPage
 };

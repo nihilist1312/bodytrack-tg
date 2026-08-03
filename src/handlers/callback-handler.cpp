@@ -301,6 +301,12 @@ void CallbackHandler::handleCallback(const TgBot::CallbackQuery::Ptr& query) {
         onAddMetric(query);
     } else if (query->data.starts_with("back")) {
         onBack(query);
+    } else if (query->data.starts_with("cancel")) {
+        onCancel(query);
+    }
+
+    else {
+        spdlog::debug("Incorrect callback");
     }
 }
 
@@ -364,7 +370,11 @@ void CallbackHandler::onMainMenu(const TgBot::CallbackQuery::Ptr& query) {
                   session.user_data->user_id);
     if (query->data.ends_with("add_record")) {
         message_service_.addRecord(session);
-    } else {
+    } else if (query->data.ends_with("history")) {
+        message_service_.historyScreen(session);
+    }
+
+    else {
         spdlog::debug("Incorrect collback");
         return;
     }
@@ -694,4 +704,15 @@ void CallbackHandler::onBack(const TgBot::CallbackQuery::Ptr& query) {
         (message_service_.*entry.action)(session);
         return;
     }
+}
+
+void CallbackHandler::onCancel(const TgBot::CallbackQuery::Ptr& query) {
+    UserSession& session = session_manager_.getSession(query);
+
+    if (!checkState(session, {UserStates::AddMetricSelectMode,
+                              UserStates::HistoryPage})) {
+        return;
+    }
+
+    message_service_.openMainMenu(session);
 }

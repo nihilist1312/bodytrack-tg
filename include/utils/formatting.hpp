@@ -2,11 +2,12 @@
 
 #include "models/body-metrics.hpp"
 
+#include <cstddef>
 #include <string>
 #include <variant>
 #include <vector>
 
-using PlaceholderValue = std::variant<int, double, std::string>;
+using PlaceholderValue = std::variant<int, double, std::string, size_t>;
 
 // заменяет {}, на элемент из вектора. На месте
 void formatInplace(std::string& text,

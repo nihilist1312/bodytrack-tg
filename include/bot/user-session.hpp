@@ -23,6 +23,7 @@ struct UserSession {
     int64_t chat_id = 0;
     int32_t last_message_id = 0;
     MessageTemplate last_message_template;
+    int history_offset = 0;
 };
 
 class UserSessionManager {

@@ -1,4 +1,25 @@
 {
+    "add_record": {
+        "text": "📝 Добавление записи\n\nВыберите способ добавления данных.",
+        "buttons": [
+            [
+                {
+                    "text": "📄 Из файла",
+                    "callback": "add_metric:file_mode"
+                },
+                {
+                    "text": "✍️ Вручную",
+                    "callback": "add_metric:manually"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "cancel"
+                }
+            ]
+        ]
+    },
     "request_date": {
         "text": "📅 Укажите дату измерения.\n\nВведите дату в формате ГГГГ-ММ-ДД\n\nНапример: 2026-07-28",
         "buttons": [

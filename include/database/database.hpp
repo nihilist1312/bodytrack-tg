@@ -3,6 +3,7 @@
 #include "models/body-metrics.hpp"
 #include "models/user-data.hpp"
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -15,7 +16,7 @@ class Database {
     Database(const std::string& db_path = "data/bodytrack.db");
     ~Database() = default;
 
-    // getters
+    // ---- Getters -----------------------------------------------------------
     std::optional<BodyMetrics> getLastBodyMetrics(int64_t user_id) const;
     std::optional<BodyMetrics> getBodyMetricsById(int64_t id) const;
     std::optional<BodyMetrics>
@@ -26,8 +27,10 @@ class Database {
     std::vector<BodyMetrics> getBodyMetricsHistory(int64_t user_id, int offset,
                                                    int limit = 10) const;
     std::optional<UserData> getUserData(int64_t user_id) const;
+    // подсчитать кол-во записей
+    size_t getBodyMetricsCount(int64_t user_id) const;
 
-    // modifiers
+    // ---- Setters -----------------------------------------------------------
     bool addUser(int64_t user_id, const UserData& user_data);
     bool addBodyMetrics(const BodyMetrics& body_metrics);
     bool editUserData(int64_t user_id, const UserData& user_data);
@@ -36,6 +39,8 @@ class Database {
     bool editBodyMetricsByUserIdAndDate(int64_t user_id,
                                         const std::string& date,
                                         const BodyMetrics& body_metrics);
+
+    // ---- Deleters ----------------------------------------------------------
     bool deleteBodyMetricsById(int64_t id);
     bool deleteBodyMetricsByUserIdAndDate(int64_t user_id,
                                           const std::string& date);
