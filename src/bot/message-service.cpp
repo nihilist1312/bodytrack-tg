@@ -613,3 +613,28 @@ void MessageService::addRecord(UserSession& session) {
     editMessage(session, {"add_record"});
     session.current_state = UserStates::AddMetricSelectMode;
 }
+
+void MessageService::registration(UserSession& session) {
+    spdlog::debug("Registration");
+    editMessage(session, {"registration"});
+    session.current_state = UserStates::RegistrationNeed;
+}
+
+void MessageService::requestName(UserSession& session) {
+    spdlog::debug("Request name");
+    session.current_state = UserStates::InputUserName;
+    editMessage(session,
+                {"request_name", {}, {{session.user_data->user_name}}});
+}
+
+void MessageService::requestAge(UserSession& session) {
+    spdlog::debug("Request age");
+    editMessage(session, {"request_age"});
+    session.current_state = UserStates::InputUserAge;
+}
+
+void MessageService::requestSex(UserSession& session) {
+    spdlog::debug("Request sex");
+    editMessage(session, {"request_gender"});
+    session.current_state = UserStates::InputUserSex;
+}

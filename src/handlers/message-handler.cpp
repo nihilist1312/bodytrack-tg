@@ -123,8 +123,7 @@ void MessageHandler::onName(const TgBot::Message::Ptr& message,
     spdlog::debug("Name handle");
     if (set_name(session.user_data.value(), message->text)) {
         spdlog::debug("Set user name: {}", session.user_data->user_name);
-        message_service_.editMessage(session, {"request_age"});
-        session.current_state = UserStates::InputUserAge;
+        message_service_.requestAge(session);
     } else {
         spdlog::debug("Incorrect name");
         message_service_.editMessage(
@@ -137,8 +136,7 @@ void MessageHandler::onAge(const TgBot::Message::Ptr& message,
     spdlog::debug("Age handle");
     if (set_age(session.user_data.value(), message->text)) {
         spdlog::debug("Set user age: {}", session.user_data->age);
-        message_service_.editMessage(session, {"request_gender"});
-        session.current_state = UserStates::InputUserSex;
+        message_service_.requestSex(session);
     } else {
         spdlog::debug("Incorrect age");
         message_service_.editMessage(session, {"invalid_age"});

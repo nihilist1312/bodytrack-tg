@@ -29,9 +29,14 @@ class MessageService {
     void deleteLast(UserSession& session);
 
     // message printer
-
+    void registration(UserSession& session);
     void openMainMenu(UserSession& session);
     void addRecord(UserSession& session);
+
+    // ---- Ввод пользовательских данных --------------------------------------
+    void requestName(UserSession& session);
+    void requestSex(UserSession& session);
+    void requestAge(UserSession& session);
 
     void requestDate(UserSession& session);
     void requestWeight(UserSession& session);

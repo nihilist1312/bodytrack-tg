@@ -33,6 +33,7 @@ UserSessionManager::getSession(const TgBot::Message::Ptr& message) {
         session.current_state = UserStates::RegistrationNeed;
         session.user_data.emplace();
         session.user_data->user_id = message->from->id;
+        session.user_data->user_name = message->from->firstName;
     }
 
     session.chat_id = message->chat->id;

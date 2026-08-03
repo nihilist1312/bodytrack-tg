@@ -16,8 +16,7 @@ void CommandHandler::onStart(const TgBot::Message::Ptr& message) {
     // если регистрация не пройдена, перезапускаем ее
     if (session.current_state >= UserStates::RegistrationNeed &&
         UserStates::InputUserSex >= session.current_state) {
-        session.current_state = UserStates::RegistrationNeed;
-        message_service_.editMessage(session, {"registration"});
+        message_service_.registration(session);
     } else {
         message_service_.openMainMenu(session);
     }
