@@ -69,6 +69,12 @@
           "text": "{}",
           "callback": "reg:default_name"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
@@ -80,16 +86,36 @@
           "text": "{}",
           "callback": "reg:default_name"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
   "request_age": {
     "text": "🎂 Сколько вам лет?\n\nВозраст поможет точнее рассчитывать показатели и анализировать ваш прогресс.",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "invalid_age": {
     "text": "❌ Некорректный возраст.\n\nПожалуйста, введите ваш возраст числом.\n\nНапример: 17",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "request_gender": {
     "text": "⚧ Укажите ваш пол.",
@@ -102,6 +128,12 @@
         {
           "text": "👩 Женский",
           "callback": "reg:female"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
         }
       ]
     ]
@@ -140,6 +172,12 @@
           "text": "{}",
           "callback": "add_metric:date_today"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
@@ -151,6 +189,12 @@
           "text": "{}",
           "callback": "add_metric:date_today"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
@@ -161,12 +205,16 @@
         {
           "text": "✏️ Изменить существующую",
           "callback": "edit_metric:{}"
+        },
+        {
+          "text": "📅 Ввести другую дату",
+          "callback": "add_metric:change_date"
         }
       ],
       [
         {
-          "text": "📅 Ввести другую дату",
-          "callback": "add_metric:change_date"
+          "text": "⬅️ Назад",
+          "callback": "back"
         }
       ]
     ]
@@ -179,6 +227,12 @@
           "text": "↩️ {} кг",
           "callback": "add_metric:weight_previous"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
@@ -190,16 +244,36 @@
           "text": "↩️ {} кг",
           "callback": "add_metric:weight_previous"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
   "request_weight_empty": {
     "text": "⚖️ Укажите ваш вес в килограммах.\n\nНапример: 83.4",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "invalid_weight_empty": {
     "text": "❌ Некорректный вес.\n\nПожалуйста, введите вес числом в килограммах.\n\nНапример: 83.4",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "request_height": {
     "text": "📏 Укажите ваш рост в сантиметрах.\n\nНапример: 186",
@@ -208,6 +282,12 @@
         {
           "text": "↩️ {} см",
           "callback": "add_metric:height_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
         }
       ]
     ]
@@ -220,16 +300,36 @@
           "text": "↩️ {} см",
           "callback": "add_metric:height_previous"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
   "request_height_empty": {
     "text": "📏 Укажите ваш рост в сантиметрах.\n\nНапример: 186",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "invalid_height_empty": {
     "text": "❌ Некорректный рост.\n\nПожалуйста, введите рост числом в сантиметрах.\n\nНапример: 186",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "request_muscle_mass": {
     "text": "💪 Укажите вашу мышечную массу в килограммах.\n\nНапример: 39.1",
@@ -238,6 +338,12 @@
         {
           "text": "↩️ {} кг",
           "callback": "add_metric:muscle_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
         }
       ]
     ]
@@ -250,16 +356,36 @@
           "text": "↩️ {} кг",
           "callback": "add_metric:muscle_mass_previous"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
   "request_muscle_mass_empty": {
     "text": "💪 Укажите вашу мышечную массу в килограммах.\n\nНапример: 39.1",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "invalid_muscle_mass_empty": {
     "text": "❌ Некорректная мышечная масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 39.1",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "request_fat_mass": {
     "text": "🔥 Укажите вашу жировую массу в килограммах.\n\nНапример: 14.2",
@@ -268,6 +394,12 @@
         {
           "text": "↩️ {} кг",
           "callback": "add_metric:fat_mass_previous"
+        }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
         }
       ]
     ]
@@ -280,16 +412,36 @@
           "text": "↩️ {} кг",
           "callback": "add_metric:fat_mass_previous"
         }
+      ],
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
       ]
     ]
   },
   "request_fat_mass_empty": {
     "text": "🔥 Укажите вашу жировую массу в килограммах.\n\nНапример: 14.2",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "invalid_fat_mass_empty": {
     "text": "❌ Некорректная жировая масса.\n\nПожалуйста, введите значение числом в килограммах.\n\nНапример: 14.2",
-    "buttons": []
+    "buttons": [
+      [
+        {
+          "text": "⬅️ Назад",
+          "callback": "back"
+        }
+      ]
+    ]
   },
   "save_metric": {
     "text": "📋 Проверьте введённые данные.\n\n📅 Дата: {}\n⚖️ Вес: {} кг\n📏 Рост: {} см\n💪 Мышечная масса: {} кг\n🔥 Жировая масса: {} кг\n\nЕсли всё верно, сохраните запись или добавьте дополнительные показатели.",

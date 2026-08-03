@@ -1,5 +1,6 @@
 #include "handlers/callback-handler.hpp"
 
+#include "bot/message-service.hpp"
 #include "bot/user-session.hpp"
 #include "models/body-metrics.hpp"
 #include "types/user-states.hpp"
@@ -267,6 +268,28 @@ namespace {
         *segment_ptr = std::nullopt;
     }
 
+    // ------------------------------------------------------------------------
+    // |                            Кнопка back                               |
+    // ------------------------------------------------------------------------
+    using MessageAction = void (MessageService::*)(UserSession&);
+
+    struct BackEntry {
+        UserStates state;
+        MessageAction action;
+    };
+
+    constexpr std::array<BackEntry, 9> kBackEntries{{
+        {UserStates::InputUserName, &MessageService::registration},
+        {UserStates::InputUserAge, &MessageService::requestName},
+        {UserStates::InputUserSex, &MessageService::requestAge},
+        {UserStates::InputDate, &MessageService::addRecord},
+        {UserStates::DateDublicate, &MessageService::addRecord},
+        {UserStates::InputWeight, &MessageService::requestDate},
+        {UserStates::InputHeight, &MessageService::requestWeight},
+        {UserStates::InputMuscleMass, &MessageService::requestHeight},
+        {UserStates::InputFatMass, &MessageService::requestMuscleMass},
+    }};
+
 } // namespace
 
 void CallbackHandler::handleCallback(const TgBot::CallbackQuery::Ptr& query) {
@@ -276,6 +299,8 @@ void CallbackHandler::handleCallback(const TgBot::CallbackQuery::Ptr& query) {
         onMainMenu(query);
     } else if (query->data.starts_with("add_metric")) {
         onAddMetric(query);
+    } else if (query->data.starts_with("back")) {
+        onBack(query);
     }
 }
 
@@ -288,9 +313,7 @@ void CallbackHandler::onRegistration(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
         spdlog::debug("Start registration");
-        session.current_state = UserStates::InputUserName;
-        message_service_.editMessage(
-            session, {"request_name", {}, {{query->from->firstName}}});
+        message_service_.requestName(session);
     } else if (query->data.ends_with("default_name")) {
         if (!checkState(session, UserStates::InputUserName)) {
             return;
@@ -659,4 +682,16 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
     }
 
     spdlog::debug("Incorrect callback");
+}
+
+void CallbackHandler::onBack(const TgBot::CallbackQuery::Ptr& query) {
+    UserSession& session = session_manager_.getSession(query);
+
+    for (const auto& entry : kBackEntries) {
+        if (session.current_state != entry.state)
+            continue;
+
+        (message_service_.*entry.action)(session);
+        return;
+    }
 }
