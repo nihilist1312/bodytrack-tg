@@ -4,6 +4,7 @@
 #include "models/body-metrics.hpp"
 #include "types/user-states.hpp"
 #include "utils/date.hpp"
+#include "validation/body-metrics-validator.hpp"
 
 #include <array>
 #include <optional>
@@ -17,7 +18,7 @@
 namespace {
 
     // ---------------------------------------------------------------------------
-    // Базовые предикаты (без изменений)
+    // Базовые предикаты
     // ---------------------------------------------------------------------------
 
     // сверяет текущее состояние и переданое
@@ -50,6 +51,27 @@ namespace {
                             const std::optional<T>& field) {
         if (session.current_state == state && field.has_value())
             return true;
+        spdlog::debug("Incorrect callback");
+        return false;
+    }
+
+    // проверяет что состояние входит в диапазон [start, end]
+    bool checkState(const UserSession& session, UserStates start,
+                    UserStates end) noexcept {
+        if (session.current_state >= start && session.current_state <= end) {
+            return true;
+        }
+        spdlog::debug("Incorrect callback");
+        return false;
+    }
+
+    // проверяет что состояние есть в весторе
+    bool checkState(const UserSession& session,
+                    const std::vector<UserStates>& states) noexcept {
+        for (auto state : states) {
+            if (session.current_state == state)
+                return true;
+        }
         spdlog::debug("Incorrect callback");
         return false;
     }
@@ -423,7 +445,9 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
     }
     if (data.ends_with("save_segments")) {
         if (session.current_state == UserStates::InputMuscleSegments) {
-            if (allSegmetsFilled(session.segment_mass_draft)) {
+            if (allSegmetsFilled(session.segment_mass_draft) &&
+                validateSegmentMass(*session.segment_mass_draft,
+                                    session.body_metrics_draft.weight)) {
                 spdlog::debug("Muscle segments save");
                 session.body_metrics_draft.segment_muscle_mass =
                     session.segment_mass_draft;
@@ -432,7 +456,9 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
                 return;
             }
         } else if (session.current_state == UserStates::InputFatSegments) {
-            if (allSegmetsFilled(session.segment_mass_draft)) {
+            if (allSegmetsFilled(session.segment_mass_draft) &&
+                validateSegmentMass(*session.segment_mass_draft,
+                                    session.body_metrics_draft.fat_mass)) {
                 spdlog::debug("Fat segments save");
                 session.body_metrics_draft.segment_fat_mass =
                     session.segment_mass_draft;
@@ -446,6 +472,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         }
 
         session.segment_mass_draft = std::nullopt;
+        message_service_.selectAdditional(session);
         return;
     }
 
@@ -458,26 +485,32 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         return;
     }
     if (data.ends_with("segment_muscle_mass")) {
-        if (!checkState(session, UserStates::SelectAdditionalMetrics)) {
+        if (session.current_state != UserStates::SelectAdditionalMetrics &&
+            !checkState(session, UserStates::InputLeftArmMuscle,
+                        UserStates::InputTrunkMuscle)) {
             return;
         }
         // инициализируем черновик
-        session.segment_mass_draft =
-            session.body_metrics_draft.segment_muscle_mass;
         if (!session.segment_mass_draft)
-            session.segment_mass_draft = {};
+            session.segment_mass_draft =
+                session.body_metrics_draft.segment_muscle_mass;
+        // if (!session.segment_mass_draft)
+        //     session.segment_mass_draft.emplace();
         message_service_.requestMuscleSegment(session);
         return;
     }
     if (data.ends_with("segment_fat_mass")) {
-        if (!checkState(session, UserStates::SelectAdditionalMetrics)) {
+        if (session.current_state != UserStates::SelectAdditionalMetrics &&
+            !checkState(session, UserStates::InputLeftArmFat,
+                        UserStates::InputTrunkFat)) {
             return;
         }
         // инициализируем черновик
-        session.segment_mass_draft =
-            session.body_metrics_draft.segment_fat_mass;
         if (!session.segment_mass_draft)
-            session.segment_mass_draft = {};
+            session.segment_mass_draft =
+                session.body_metrics_draft.segment_fat_mass;
+        // if (!session.segment_mass_draft)
+        //     session.segment_mass_draft.emplace();
         message_service_.requestFatSegment(session);
         return;
     }
@@ -513,7 +546,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         message_service_.selectAdditional(session);
         return;
     }
-    if (data.ends_with("segment_muscle_mass_previous")) {
+    if (data.ends_with("muscle_segments_previous")) {
         const bool exists = session.last_body_metrics &&
                             session.last_body_metrics->segment_muscle_mass;
         if (!checkStateAndExist(session, UserStates::InputMuscleSegments,
@@ -527,7 +560,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         message_service_.selectAdditional(session);
         return;
     }
-    if (data.ends_with("segment_fat_mass_previous")) {
+    if (data.ends_with("fat_segments_previous")) {
         const bool exists = session.last_body_metrics &&
                             session.last_body_metrics->segment_fat_mass;
         if (!checkStateAndExist(session, UserStates::InputFatSegments,
@@ -594,6 +627,9 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         if (!checkState(session, entry->state)) {
             return;
         }
+        if (!session.segment_mass_draft) {
+            session.segment_mass_draft.emplace();
+        }
         (message_service_.*entry->request)(session);
         return;
     }
@@ -611,9 +647,14 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
     }
 
     // ---- удаление сегмента --------------------------------------------------
-    if (data.ends_with("segment_muscle_mass_value_delete") ||
-        data.ends_with("segment_fat_mass_value_delete")) {
+    if (data.ends_with("segment_muscle_mass_value_delete")) {
         handle_segment_delete(session);
+        message_service_.requestMuscleSegment(session);
+        return;
+    }
+    if (data.ends_with("segment_fat_mass_value_delete")) {
+        handle_segment_delete(session);
+        message_service_.requestFatSegment(session);
         return;
     }
 

@@ -7,6 +7,7 @@
 #include "utils/input_parser.hpp"
 #include "validation/body-metrics-validator.hpp"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -264,8 +265,11 @@ void MessageHandler::onMuscleMassSegments(const TgBot::Message::Ptr& message,
     session.segment_mass_draft = getSegmentsMass(message->text);
     if (session.segment_mass_draft &&
         validateSegmentMass(*session.segment_mass_draft,
-                            session.body_metrics_draft.muscle_mass)) {
+                            session.body_metrics_draft.weight)) {
         spdlog::debug("Set muscle segments: {}", message->text);
+        session.body_metrics_draft.segment_muscle_mass =
+            session.segment_mass_draft;
+        session.segment_mass_draft = std::nullopt;
         message_service_.selectAdditional(session);
     } else {
         message_service_.invalidMuscleSegment(session);
@@ -280,6 +284,9 @@ void MessageHandler::onFatMassSegments(const TgBot::Message::Ptr& message,
         validateSegmentMass(*session.segment_mass_draft,
                             session.body_metrics_draft.fat_mass)) {
         spdlog::debug("Set fat segments: {}", message->text);
+        session.body_metrics_draft.segment_fat_mass =
+            session.segment_mass_draft;
+        session.segment_mass_draft = std::nullopt;
         message_service_.selectAdditional(session);
     } else {
         message_service_.invalidFatSegment(session);
@@ -311,7 +318,7 @@ void MessageHandler::inputSegment(std::string_view message,
 void MessageHandler::onLeftArmMuscle(const TgBot::Message::Ptr& message,
                                      UserSession& session) {
     inputSegment(message->text, session, "left arm", "muscle",
-                 &SegmentMass::left_arm, &BodyMetrics::muscle_mass,
+                 &SegmentMass::left_arm, &BodyMetrics::weight,
                  &MessageService::requestMuscleSegment,
                  &MessageService::invalidMuscleSegment);
 }
@@ -319,7 +326,7 @@ void MessageHandler::onLeftArmMuscle(const TgBot::Message::Ptr& message,
 void MessageHandler::onRightArmMuscle(const TgBot::Message::Ptr& message,
                                       UserSession& session) {
     inputSegment(message->text, session, "right arm", "muscle",
-                 &SegmentMass::right_arm, &BodyMetrics::muscle_mass,
+                 &SegmentMass::right_arm, &BodyMetrics::weight,
                  &MessageService::requestMuscleSegment,
                  &MessageService::invalidMuscleSegment);
 }
@@ -327,7 +334,7 @@ void MessageHandler::onRightArmMuscle(const TgBot::Message::Ptr& message,
 void MessageHandler::onLeftLegMuscle(const TgBot::Message::Ptr& message,
                                      UserSession& session) {
     inputSegment(message->text, session, "left leg", "muscle",
-                 &SegmentMass::left_leg, &BodyMetrics::muscle_mass,
+                 &SegmentMass::left_leg, &BodyMetrics::weight,
                  &MessageService::requestMuscleSegment,
                  &MessageService::invalidMuscleSegment);
 }
@@ -335,7 +342,7 @@ void MessageHandler::onLeftLegMuscle(const TgBot::Message::Ptr& message,
 void MessageHandler::onRightLegMuscle(const TgBot::Message::Ptr& message,
                                       UserSession& session) {
     inputSegment(message->text, session, "right leg", "muscle",
-                 &SegmentMass::right_leg, &BodyMetrics::muscle_mass,
+                 &SegmentMass::right_leg, &BodyMetrics::weight,
                  &MessageService::requestMuscleSegment,
                  &MessageService::invalidMuscleSegment);
 }
@@ -343,8 +350,7 @@ void MessageHandler::onRightLegMuscle(const TgBot::Message::Ptr& message,
 void MessageHandler::onTrunkMuscle(const TgBot::Message::Ptr& message,
                                    UserSession& session) {
     inputSegment(message->text, session, "trunk", "muscle", &SegmentMass::trunk,
-                 &BodyMetrics::muscle_mass,
-                 &MessageService::requestMuscleSegment,
+                 &BodyMetrics::weight, &MessageService::requestMuscleSegment,
                  &MessageService::invalidMuscleSegment);
 }
 

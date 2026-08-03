@@ -395,9 +395,8 @@ void MessageService::requestSegmentGroup(
 
     if (session.segment_mass_draft) {
         spdlog::debug("{} edit", log_label);
-        editMessage(session,
-                    {base_message_key + "_edit",
-                     {segmentMassFormat(session.body_metrics_draft.*field)}});
+        editMessage(session, {base_message_key + "_edit",
+                              {segmentMassFormat(session.segment_mass_draft)}});
     } else if (session.last_body_metrics &&
                session.last_body_metrics.value().*field) {
         spdlog::debug("Previous {}", log_label);

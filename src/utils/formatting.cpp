@@ -9,13 +9,19 @@
 
 using PlaceholderValue = std::variant<int, double, std::string>;
 
-// overloaded - класс с множествнной перегрузкой оператора (),
-// компилятор сам определяет нужный
-template <class... Ts> struct overloaded : Ts... {
-    using Ts::operator()...;
-};
-// подсказка компилятору по определению шаблона
-template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+namespace {
+    // overloaded - класс с множествнной перегрузкой оператора (),
+    // компилятор сам определяет нужный
+    template <class... Ts> struct overloaded : Ts... {
+        using Ts::operator()...;
+    };
+    // подсказка компилятору по определению шаблона
+    template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
+    auto toPlaceholder = [](const auto& opt) -> PlaceholderValue {
+        return opt ? PlaceholderValue(*opt) : PlaceholderValue("-");
+    };
+} // namespace
 
 void formatInplace(std::string& text,
                    const std::vector<PlaceholderValue>& data) {
@@ -51,8 +57,9 @@ additionalFormat(const BodyMetrics& metric) noexcept {
 
     res[0] = (metric.water_mass) ? doubleToStr(metric.water_mass.value()) : "-";
     res[1] = (metric.bone_mass) ? doubleToStr(metric.bone_mass.value()) : "-";
-    res[2] =
-        (metric.visceral_fat) ? doubleToStr(metric.visceral_fat.value()) : "-";
+    res[2] = (metric.visceral_fat)
+                 ? PlaceholderValue(metric.visceral_fat.value())
+                 : "-";
     res[3] =
         (metric.protein_mass) ? doubleToStr(metric.protein_mass.value()) : "-";
     res[4] = segmentMassFormat(metric.segment_muscle_mass);
@@ -68,11 +75,11 @@ segmentMassFormat(const std::optional<SegmentMass>& segment_mass) noexcept {
     constexpr static auto temp = "• Левая рука: {}\n• Правая рука: {}\n• Левая "
                                  "нога: {}\n• Правая нога: {}\n• Туловище: {}";
     if (segment_mass) {
-        return format(temp, {segment_mass->left_arm.value(),
-                             segment_mass->right_arm.value(),
-                             segment_mass->left_leg.value(),
-                             segment_mass->right_leg.value(),
-                             segment_mass->trunk.value()});
+        return format(temp, {toPlaceholder(segment_mass->left_arm),
+                             toPlaceholder(segment_mass->right_arm),
+                             toPlaceholder(segment_mass->left_leg),
+                             toPlaceholder(segment_mass->right_leg),
+                             toPlaceholder(segment_mass->trunk)});
     } else
         return "-";
 }

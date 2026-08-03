@@ -4,7 +4,7 @@
 
 #include <boost/system/detail/error_category.hpp>
 
-#include <cstdlib>
+#include <spdlog/spdlog.h>
 
 [[nodiscard]]
 bool validateBodyMetrics(const BodyMetrics& metrics) noexcept {
@@ -19,19 +19,19 @@ bool validateBodyMetrics(const BodyMetrics& metrics) noexcept {
     total += (metrics.protein_mass) ? metrics.protein_mass.value() : 0.;
     total += (metrics.bone_mass) ? metrics.bone_mass.value() : 0.;
     total += metrics.fat_mass;
-    if (std::abs(total - metrics.weight) > 1.) {
+    if (total - metrics.weight > .1) {
         return false;
     }
 
     // проверка что сумма масс сегментов равна общей массе группы
     if (metrics.segment_muscle_mass &&
-        validateSegmentMass(metrics.segment_muscle_mass.value(),
-                            metrics.muscle_mass)) {
+        !validateSegmentMass(metrics.segment_muscle_mass.value(),
+                             metrics.weight)) {
         return false;
     }
     if (metrics.segment_fat_mass &&
-        validateSegmentMass(metrics.segment_fat_mass.value(),
-                            metrics.fat_mass)) {
+        !validateSegmentMass(metrics.segment_fat_mass.value(),
+                             metrics.fat_mass)) {
         return false;
     }
 
@@ -47,5 +47,10 @@ bool validateSegmentMass(const SegmentMass& segments, double total) noexcept {
     total_sum += (segments.right_leg) ? segments.right_leg.value() : 0.;
     total_sum += (segments.trunk) ? segments.trunk.value() : 0.;
 
-    return (std::abs(total - total_sum) <= 1.);
+    if (total_sum - total > .1) {
+        spdlog::debug("Invalid Segment mass");
+        return false;
+    } else {
+        return true;
+    }
 }
