@@ -5,8 +5,11 @@
 #include "message-loader.hpp"
 #include "types/message-data.hpp"
 #include "types/message-template.hpp"
+#include "types/user-states.hpp"
 
 #include <cstdint>
+#include <string>
+#include <string_view>
 
 #include <tgbot/tgbot.h>
 #include <tgbot/types/InlineKeyboardMarkup.h>
@@ -42,17 +45,19 @@ class MessageService {
     void requestAge(UserSession& session);
 
     void requestDate(UserSession& session);
+    void invalidDate(UserSession& session);
+    void doublicateDate(UserSession& session);
+    void doublicateDateEdit(UserSession& session);
+
     void requestWeight(UserSession& session);
     void requestHeight(UserSession& session);
     void requestMuscleMass(UserSession& session);
     void requestFatMass(UserSession& session);
 
-    void invalidDate(UserSession& session);
     void invalidWeight(UserSession& session);
     void invalidHeight(UserSession& session);
     void invalidMuscleMass(UserSession& session);
     void invalidFatMass(UserSession& session);
-    void doublicateDate(UserSession& session);
 
     // сводка основных метрик
     void printSummary(UserSession& session);
@@ -108,9 +113,16 @@ class MessageService {
     MessageLoader& message_loader_;
     Database& database_;
 
+    // загружает сообщение из шаблона, заполняя плейсхолдеры
     MessageData loadMessage(const MessageTemplate& message);
 
-    // Универсальный хелпер для request_*/invalid_* простых (несегментных)
+    // request_*/invalid_* для ОСНОВНЫХ метрик
+    template <class T>
+    void requestMetric(UserSession& session, std::string_view log_label,
+                       std::string_view op_label, T BodyMetrics::* field,
+                       const std::string& base_key, UserStates state);
+
+    // Универсальный хелпер для request_*/invalid_* ДОП простых (несегментных)
     // метрик
     template <class T>
     void requestSimpleMetric(UserSession& session,

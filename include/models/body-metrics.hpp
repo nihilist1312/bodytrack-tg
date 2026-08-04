@@ -17,14 +17,14 @@ struct BodyMetrics {
     // id of the record in the database, not the user id
     std::optional<int64_t> id;
     int64_t user_id;
-    std::string date; // format: YYYY-MM-DD, for example: 2026-07-23
+    std::string date = ""; // format: YYYY-MM-DD, for example: 2026-07-23
 
     // necessary
-    double weight;
-    double height;
-    int age;
-    double muscle_mass;
-    double fat_mass;
+    double weight = 0.;
+    double height = 0.;
+    int age = 0;
+    double muscle_mass = 0.;
+    double fat_mass = 0.;
 
     // additional
     std::optional<double> water_mass;

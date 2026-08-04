@@ -508,6 +508,11 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         message_service_.selectAdditional(session);
         return;
     }
+    if (data.ends_with("save_additional")) {
+        if (!checkState(session, UserStates::SelectAdditionalMetrics)) {
+            return;
+        }
+    }
 
     // ---- выбор доп метрик для редактирования ------------------------------
     if (const auto* entry = findAdditionalSelectEntry(data)) {

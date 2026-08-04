@@ -1,0 +1,52 @@
+{
+    "add_record": {
+        "text": "📝 Добавление записи\n\nВыберите способ добавления данных.",
+        "buttons": [
+            [
+                {
+                    "text": "📄 Из файла",
+                    "callback": "add_metric:file_mode"
+                },
+                {
+                    "text": "✍️ Вручную",
+                    "callback": "add_metric:manually"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "cancel"
+                }
+            ]
+        ]
+    },
+    "save_metric": {
+        "text": "📋 Проверьте введённые данные.\n\n📅 Дата: {}\n⚖️ Вес: {} кг\n📏 Рост: {} см\n💪 Мышечная масса: {} кг\n🔥 Жировая масса: {} кг\n\n{}\n\n{}\n\nЕсли всё верно, сохраните запись.",
+        "buttons": [
+            [
+                {
+                    "text": "✏️ Основные данные",
+                    "callback": "add_metric:edit_main"
+                }
+            ],
+            [
+                {
+                    "text": "➕ Дополнительные данные",
+                    "callback": "add_metric:additional"
+                }
+            ],
+            [
+                {
+                    "text": "💾 Сохранить запись",
+                    "callback": "add_metric:save"
+                }
+            ],
+            [
+                {
+                    "text": "❌ Отмена",
+                    "callback": "cancel"
+                }
+            ]
+        ]
+    }
+}

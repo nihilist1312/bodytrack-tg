@@ -35,7 +35,7 @@
             [
                 {
                     "text": "💾 Сохранить запись",
-                    "callback": "add_metric:save"
+                    "callback": "add_metric:save_additional"
                 }
             ]
         ]
@@ -76,7 +76,7 @@
             [
                 {
                     "text": "💾 Сохранить запись",
-                    "callback": "add_metric:save"
+                    "callback": "add_metric:save_additional"
                 }
             ]
         ]
