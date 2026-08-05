@@ -46,9 +46,13 @@ void bot_start() {
         "add", [&command_handler](const TgBot::Message::Ptr& message) {
             command_handler.onAdd(message);
         });
+    bot.getEvents().onCommand(
+        "history", [&command_handler](const TgBot::Message::Ptr& message) {
+            command_handler.onHistory(message);
+        });
 
     // ---- 2. Текстовые сообщения и файлы ------------------------------------
-    bot.getEvents().onAnyMessage(
+    bot.getEvents().onNonCommandMessage(
         [&message_handler](const TgBot::Message::Ptr& message) {
             message_handler.handleMessage(message);
         });
