@@ -20,9 +20,14 @@ void formatInplace(std::string& text,
 // возвращает плейсхолдеры для дополнительных метрик,
 // или "-", если таковая отсутствует
 [[nodiscard]] std::vector<PlaceholderValue>
-additionalFormat(const BodyMetrics& metric) noexcept;
+additionalPlaceholders(const BodyMetrics& metric) noexcept;
 
 // возвращает плейсхолдер для сегментной массы в развернутом виде,
 // или "-" если записи нет
+[[nodiscard]] std::string segmentMassPlaceholders(
+    const std::optional<SegmentMass>& segment_mass) noexcept;
+
+// Возвращает строку со всеми имеющимеся ДОП метриками
+// или "" если таковых нет
 [[nodiscard]] std::string
-segmentMassFormat(const std::optional<SegmentMass>& segment_mass) noexcept;
+additionalMetricsText(const BodyMetrics& metric) noexcept;

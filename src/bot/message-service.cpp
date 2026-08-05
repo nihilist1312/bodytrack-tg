@@ -295,8 +295,9 @@ void MessageService::selectAdditional(UserSession& session) {
     spdlog::debug("Additional metrics list");
     if (haveAdditional(session.body_metrics_draft)) {
         spdlog::debug("Addition metrics exist");
-        editMessage(session, {"additional_metrics",
-                              {additionalFormat(session.body_metrics_draft)}});
+        editMessage(session,
+                    {"additional_metrics",
+                     {additionalPlaceholders(session.body_metrics_draft)}});
     }
     // пишем пояснение если ни одна метрика не была введена
     else {
@@ -400,15 +401,15 @@ void MessageService::requestSegmentGroup(
 
     if (session.segment_mass_draft) {
         spdlog::debug("{} edit", log_label);
-        editMessage(session, {base_message_key + "_edit",
-                              {segmentMassFormat(session.segment_mass_draft)}});
+        editMessage(session,
+                    {base_message_key + "_edit",
+                     {segmentMassPlaceholders(session.segment_mass_draft)}});
     } else if (session.last_body_metrics &&
                session.last_body_metrics.value().*field) {
         spdlog::debug("Previous {}", log_label);
-        editMessage(
-            session,
-            {base_message_key + "_previous",
-             {segmentMassFormat(session.last_body_metrics.value().*field)}});
+        editMessage(session, {base_message_key + "_previous",
+                              {segmentMassPlaceholders(
+                                  session.last_body_metrics.value().*field)}});
     } else {
         spdlog::debug("Empty {}", log_label);
         editMessage(session, {base_message_key});
@@ -601,15 +602,17 @@ void MessageService::invalidTrunkFat(UserSession& session) {
 
 void MessageService::cannotSaveMuscleSegments(UserSession& session) {
     spdlog::debug("Error save muscle segments");
-    editMessage(session, {"invalid_save_muscle_segments",
-                          {segmentMassFormat(session.segment_mass_draft)}});
+    editMessage(session,
+                {"invalid_save_muscle_segments",
+                 {segmentMassPlaceholders(session.segment_mass_draft)}});
     session.current_state = UserStates::InputMuscleSegments;
 }
 
 void MessageService::cannotSaveFatSegments(UserSession& session) {
     spdlog::debug("Error save fat segments");
-    editMessage(session, {"invalid_save_fat_segments",
-                          {segmentMassFormat(session.segment_mass_draft)}});
+    editMessage(session,
+                {"invalid_save_fat_segments",
+                 {segmentMassPlaceholders(session.segment_mass_draft)}});
     session.current_state = UserStates::InputFatSegments;
 }
 
