@@ -25,6 +25,7 @@ enum class UserStates {
     InputFatMass,
 
     MetricSummary,
+    SelectMainMetrics,
 
     // input additional metrics
     SelectAdditionalMetrics,

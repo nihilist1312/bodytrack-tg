@@ -34,8 +34,13 @@ class MessageHandler {
     void onName(const TgBot::Message::Ptr& message, UserSession& session);
     void onAge(const TgBot::Message::Ptr& message, UserSession& session);
 
-    // input metrics
+    // ---- ввод основных метрик ----------------------------------------------
     void onDate(const TgBot::Message::Ptr& message, UserSession& session);
+    void inputMain(std::string_view message, UserSession& session,
+                   std::string_view log_label,
+                   bool (*parser)(double&, std::string_view),
+                   double BodyMetrics::* field, ServiceFunc success_creat,
+                   ServiceFunc success_edit, ServiceFunc invalid_func);
     void onWeight(const TgBot::Message::Ptr& message, UserSession& session);
     void onHeight(const TgBot::Message::Ptr& message, UserSession& session);
     void onMuscleMass(const TgBot::Message::Ptr& message, UserSession& session);

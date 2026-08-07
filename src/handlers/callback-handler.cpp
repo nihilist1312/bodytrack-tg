@@ -19,7 +19,7 @@
 namespace {
 
     // ---------------------------------------------------------------------------
-    // Базовые предикаты
+    //                              Базовые предикаты                            |
     // ---------------------------------------------------------------------------
 
     // сверяет текущее состояние и переданое
@@ -269,7 +269,7 @@ namespace {
     }
 
     // ------------------------------------------------------------------------
-    // |                            Кнопка back                               |
+    // |                           8. Кнопка back                             |
     // ------------------------------------------------------------------------
     using MessageAction = void (MessageService::*)(UserSession&);
 
@@ -289,6 +289,27 @@ namespace {
         {UserStates::InputMuscleMass, &MessageService::requestHeight},
         {UserStates::InputFatMass, &MessageService::requestMuscleMass},
     }};
+
+    // ---- 9. Ввод основных метрик -------------------------------------------
+    struct MainSelectEntry {
+        std::string_view suffix;
+        MessageAction action;
+    };
+
+    constexpr std::array<MainSelectEntry, 5> kMainSelectEntries{
+        {{"date_edit", &MessageService::requestDate},
+         {"weight_edit", &MessageService::requestWeight},
+         {"height_edit", &MessageService::requestHeight},
+         {"muscle_mass_edit", &MessageService::requestMuscleMass},
+         {"fat_mass_edit", &MessageService::requestFatMass}}};
+
+    const MainSelectEntry* findMainSelectEntry(std::string_view data) {
+        for (const auto& entry : kMainSelectEntries) {
+            if (data.ends_with(entry.suffix))
+                return &entry;
+        }
+        return nullptr;
+    }
 
 } // namespace
 
@@ -343,8 +364,7 @@ void CallbackHandler::onRegistration(const TgBot::CallbackQuery::Ptr& query) {
         session.user_data->sex = Sex::Male;
         database_.addUser(session.user_data->user_id,
                           session.user_data.value());
-        session.current_state = UserStates::MainMenu;
-        message_service_.editMessage(session, {"empty_menu"});
+        message_service_.openMainMenu(session);
     } else if (query->data.ends_with("female")) {
         if (!checkState(session, UserStates::InputUserSex)) {
             return;
@@ -353,8 +373,7 @@ void CallbackHandler::onRegistration(const TgBot::CallbackQuery::Ptr& query) {
         session.user_data->sex = Sex::Female;
         database_.addUser(session.user_data->user_id,
                           session.user_data.value());
-        session.current_state = UserStates::MainMenu;
-        message_service_.editMessage(session, {"empty_menu"});
+        message_service_.openMainMenu(session);
     } else {
         spdlog::debug("Incorrect collback");
         return;
@@ -429,16 +448,24 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         message_service_.requestWeight(session);
         return;
     }
-    if (data.ends_with("change_date")) {
+    if (data.ends_with("date_change")) {
         if (!checkState(session, UserStates::DateDublicate)) {
             return;
         }
         message_service_.requestDate(session);
-        session.current_state = UserStates::InputDate;
         return;
     }
 
-    // ---- автоподстановка предыдущих значений (основные метрики) --------
+    // ---- выбор основной метрики для редактирования -------------------------
+    if (auto entry = findMainSelectEntry(data)) {
+        if (!checkState(session, UserStates::SelectMainMetrics)) {
+            return;
+        }
+        (message_service_.*entry->action)(session);
+        return;
+    }
+
+    // ---- автоподстановка предыдущих значений (основные метрики) ------------
     for (const auto& entry : kCoreMetricPreviousEntries) {
         if (!data.ends_with(entry.suffix)) {
             continue;
@@ -465,7 +492,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         message_service_.openMainMenu(session);
         return;
     }
-    if (data.ends_with("additional")) {
+    if (data.ends_with("select_additional")) {
         // вызывать можно только из сводки и ввода доп метрик
         if (session.current_state < UserStates::MetricSummary ||
             session.current_state > UserStates::InputFatSegments) {
@@ -473,7 +500,6 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
         message_service_.selectAdditional(session);
-        session.segment_mass_draft = std::nullopt;
         return;
     }
     if (data.ends_with("save_segments")) {
@@ -504,14 +530,30 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
 
-        session.segment_mass_draft = std::nullopt;
         message_service_.selectAdditional(session);
+        return;
+    }
+    if (data.ends_with("edit_main")) {
+        if (!checkState(session, UserStates::InputDate,
+                        UserStates::MetricSummary)) {
+            return;
+        }
+        message_service_.selectMain(session);
         return;
     }
     if (data.ends_with("save_additional")) {
         if (!checkState(session, UserStates::SelectAdditionalMetrics)) {
             return;
         }
+        message_service_.printSummary(session);
+        return;
+    }
+    if (data.ends_with("save_metric")) {
+        if (!checkState(session, UserStates::SelectMainMetrics)) {
+            return;
+        }
+        message_service_.printSummary(session);
+        return;
     }
 
     // ---- выбор доп метрик для редактирования ------------------------------
@@ -593,7 +635,6 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         }
         session.body_metrics_draft.segment_muscle_mass =
             session.last_body_metrics->segment_muscle_mass;
-        session.segment_mass_draft = std::nullopt;
         spdlog::debug("Using previous muscle segment");
         message_service_.selectAdditional(session);
         return;
@@ -607,7 +648,6 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         }
         session.body_metrics_draft.segment_fat_mass =
             session.last_body_metrics->segment_fat_mass;
-        session.segment_mass_draft = std::nullopt;
         spdlog::debug("Using previous fat segments");
         message_service_.selectAdditional(session);
         return;
@@ -642,8 +682,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
                                 session.segment_mass_draft)) {
             return;
         }
-        session.segment_mass_draft =
-            session.body_metrics_draft.segment_muscle_mass = std::nullopt;
+        session.body_metrics_draft.segment_muscle_mass = std::nullopt;
         spdlog::debug("Delete segment muscle mass");
         message_service_.selectAdditional(session);
         return;
@@ -653,8 +692,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
                                 session.segment_mass_draft)) {
             return;
         }
-        session.segment_mass_draft =
-            session.body_metrics_draft.segment_fat_mass = std::nullopt;
+        session.body_metrics_draft.segment_fat_mass = std::nullopt;
         spdlog::debug("Delete segment fat mass");
         message_service_.selectAdditional(session);
         return;

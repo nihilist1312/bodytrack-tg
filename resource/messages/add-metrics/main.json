@@ -21,7 +21,7 @@
         ]
     },
     "save_metric": {
-        "text": "📋 Проверьте введённые данные.\n\n📅 Дата: {}\n⚖️ Вес: {} кг\n📏 Рост: {} см\n💪 Мышечная масса: {} кг\n🔥 Жировая масса: {} кг\n\n{}\n\n{}\n\nЕсли всё верно, сохраните запись.",
+        "text": "📋 Проверьте введённые данные.\n\n📅 Дата: {}\n⚖️ Вес: {} кг\n📏 Рост: {} см\n💪 Мышечная масса: {} кг\n🔥 Жировая масса: {} кг\n\n{}\n\nЕсли всё верно, сохраните запись.",
         "buttons": [
             [
                 {
@@ -32,7 +32,7 @@
             [
                 {
                     "text": "➕ Дополнительные данные",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ],
             [
@@ -43,8 +43,45 @@
             ],
             [
                 {
-                    "text": "❌ Отмена",
+                    "text": "❌ Удалить запись",
                     "callback": "cancel"
+                }
+            ]
+        ]
+    },
+    "select_main_metrics": {
+        "text": "✏️ Редактирование основных данных\n\nВыберите показатель, который хотите изменить.\n\n📅 Дата: {}\n⚖️ Вес: {} кг\n📏 Рост: {} см\n💪 Мышечная масса: {} кг\n🔥 Жировая масса: {} кг",
+        "buttons": [
+            [
+                {
+                    "text": "📅 Дата",
+                    "callback": "add_metric:date_edit"
+                },
+                {
+                    "text": "⚖️ Вес",
+                    "callback": "add_metric:weight_edit"
+                }
+            ],
+            [
+                {
+                    "text": "📏 Рост",
+                    "callback": "add_metric:height_edit"
+                },
+                {
+                    "text": "💪 Мышцы",
+                    "callback": "add_metric:muscle_mass_edit"
+                }
+            ],
+            [
+                {
+                    "text": "🔥 Жир",
+                    "callback": "add_metric:fat_mass_edit"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ Назад",
+                    "callback": "add_metric:save_metric"
                 }
             ]
         ]

@@ -62,6 +62,9 @@ class MessageService {
     // сводка основных метрик
     void printSummary(UserSession& session);
 
+    // выбор ОСНОВНОЙ метрики для редактирования
+    void selectMain(UserSession& session);
+
     // выбор доп метрики для редактирования
     void selectAdditional(UserSession& session);
 

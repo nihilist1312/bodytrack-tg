@@ -2,6 +2,7 @@
 
 #include "bot/user-session.hpp"
 #include "models/body-metrics.hpp"
+#include "types/input-mode.hpp"
 #include "types/message-data.hpp"
 #include "types/message-template.hpp"
 #include "types/user-states.hpp"
@@ -12,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include <spdlog/spdlog.h>
@@ -222,7 +224,7 @@ void MessageService::requestMetric(UserSession& session,
                                    const std::string& base_key,
                                    UserStates state) {
     spdlog::debug("{} {}", op_label, metric_label);
-    if (session.body_metrics_draft.*field > 0.) {
+    if (session.input_mode == InputMode::Editing) {
         spdlog::debug("Edit version");
         editMessage(session,
                     {base_key + "_edit", {session.body_metrics_draft.*field}});
@@ -287,14 +289,29 @@ void MessageService::printSummary(UserSession& session) {
                            session.body_metrics_draft.weight,
                            session.body_metrics_draft.height,
                            session.body_metrics_draft.muscle_mass,
-                           session.body_metrics_draft.fat_mass}});
+                           session.body_metrics_draft.fat_mass,
+                           additionalMetricsText(session.body_metrics_draft)}});
     session.current_state = UserStates::MetricSummary;
 }
 
+void MessageService::selectMain(UserSession& session) {
+    spdlog::debug("Select main metrics");
+    editMessage(session, {"select_main_metrics",
+                          {session.body_metrics_draft.date,
+                           session.body_metrics_draft.weight,
+                           session.body_metrics_draft.height,
+                           session.body_metrics_draft.muscle_mass,
+                           session.body_metrics_draft.fat_mass}});
+    // Переводим ввод в режим редактирования
+    session.input_mode = InputMode::Editing;
+    session.current_state = UserStates::SelectMainMetrics;
+}
+
 void MessageService::selectAdditional(UserSession& session) {
-    spdlog::debug("Additional metrics list");
+    spdlog::debug("Select additional metrics");
     if (haveAdditional(session.body_metrics_draft)) {
         spdlog::debug("Addition metrics exist");
+        session.segment_mass_draft = std::nullopt;
         editMessage(session,
                     {"additional_metrics",
                      {additionalPlaceholders(session.body_metrics_draft)}});

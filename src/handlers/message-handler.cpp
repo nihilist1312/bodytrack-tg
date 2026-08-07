@@ -3,6 +3,7 @@
 #include "bot/message-service.hpp"
 #include "bot/user-session.hpp"
 #include "models/body-metrics.hpp"
+#include "types/input-mode.hpp"
 #include "types/user-states.hpp"
 #include "utils/input_parser.hpp"
 #include "validation/body-metrics-validator.hpp"
@@ -154,60 +155,63 @@ void MessageHandler::onDate(const TgBot::Message::Ptr& message,
             return;
         }
         spdlog::debug("Set date: {}", session.body_metrics_draft.date);
-        message_service_.requestWeight(session);
+        if (session.input_mode == InputMode::Creating)
+            message_service_.requestWeight(session);
+        else
+            message_service_.selectMain(session);
     } else {
         message_service_.invalidDate(session);
     }
 }
 
 // ---- ввод ОСНОВНЫХ метрик --------------------------------------------------
+void MessageHandler::inputMain(std::string_view message, UserSession& session,
+                               std::string_view log_label,
+                               bool (*parser)(double&, std::string_view),
+                               double BodyMetrics::* field,
+                               ServiceFunc success_creat,
+                               ServiceFunc success_edit,
+                               ServiceFunc invalid_func) {
+    spdlog::debug("{} handle", log_label);
+    if (parser(session.body_metrics_draft.*field, message)) {
+        spdlog::debug("set {}: {}", log_label,
+                      session.body_metrics_draft.*field);
+        if (session.input_mode == InputMode::Creating) {
+            (message_service_.*success_creat)(session);
+        } else {
+            (message_service_.*success_edit)(session);
+        }
+    } else {
+        (message_service_.*invalid_func)(session);
+    }
+}
 
 void MessageHandler::onWeight(const TgBot::Message::Ptr& message,
                               UserSession& session) {
-    spdlog::debug("Weight handle");
-    if (setMass(session.body_metrics_draft.weight, message->text)) {
-        spdlog::debug("Set weight: {}", session.body_metrics_draft.weight);
-        message_service_.requestHeight(session);
-    } else {
-        message_service_.invalidWeight(session);
-    }
+    inputMain(message->text, session, "weight", &setMass, &BodyMetrics::weight,
+              &MessageService::requestHeight, &MessageService::selectMain,
+              &MessageService::invalidWeight);
 }
 
 void MessageHandler::onHeight(const TgBot::Message::Ptr& message,
                               UserSession& session) {
-    spdlog::debug("Height handle");
-    if (setHeight(session.body_metrics_draft, message->text)) {
-        spdlog::debug("Set height: {}", session.body_metrics_draft.height);
-        message_service_.requestMuscleMass(session);
-    } else {
-        message_service_.invalidHeight(session);
-    }
+    inputMain(message->text, session, "height", &setHeight,
+              &BodyMetrics::height, &MessageService::requestMuscleMass,
+              &MessageService::selectMain, &MessageService::invalidHeight);
 }
 
 void MessageHandler::onMuscleMass(const TgBot::Message::Ptr& message,
                                   UserSession& session) {
-    spdlog::debug("Muscle Mass handle");
-    if (setMass(session.body_metrics_draft.muscle_mass, message->text) &&
-        session.body_metrics_draft.muscle_mass <
-            session.body_metrics_draft.weight) {
-        spdlog::debug("Set muscle mass: {}",
-                      session.body_metrics_draft.muscle_mass);
-        message_service_.requestFatMass(session);
-    } else {
-        message_service_.invalidMuscleMass(session);
-    }
+    inputMain(message->text, session, "muscle mass", &setMass,
+              &BodyMetrics::muscle_mass, &MessageService::requestFatMass,
+              &MessageService::selectMain, &MessageService::invalidMuscleMass);
 }
 
 void MessageHandler::onFatMass(const TgBot::Message::Ptr& message,
                                UserSession& session) {
-    spdlog::debug("Fat mass handle");
-    if (setMass(session.body_metrics_draft.fat_mass, message->text) &&
-        validateBodyMetrics(session.body_metrics_draft)) {
-        spdlog::debug("Set fat mass: {}", session.body_metrics_draft.fat_mass);
-        message_service_.printSummary(session);
-    } else {
-        message_service_.invalidFatMass(session);
-    }
+    inputMain(message->text, session, "fat mass", &setMass,
+              &BodyMetrics::fat_mass, &MessageService::printSummary,
+              &MessageService::selectMain, &MessageService::invalidFatMass);
 }
 
 // ---- ввод ДОП. метрик ------------------------------------------------------

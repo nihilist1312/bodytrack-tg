@@ -15,16 +15,16 @@ struct SegmentMass {
 // храним данные о метриках тела пользователя в абсолютных значениях, kg, cm
 struct BodyMetrics {
     // id of the record in the database, not the user id
-    std::optional<int64_t> id;
-    int64_t user_id;
+    std::optional<int64_t> id{};
+    int64_t user_id{};
     std::string date = ""; // format: YYYY-MM-DD, for example: 2026-07-23
 
     // necessary
-    double weight = 0.;
-    double height = 0.;
-    int age = 0;
-    double muscle_mass = 0.;
-    double fat_mass = 0.;
+    double weight{};
+    double height{};
+    int age{};
+    double muscle_mass{};
+    double fat_mass{};
 
     // additional
     std::optional<double> water_mass;
@@ -44,7 +44,7 @@ double fatPercentage(const BodyMetrics& metric) noexcept;
 
 bool setDate(BodyMetrics& target, const std::string& text);
 bool setMass(double& target, std::string_view text) noexcept;
-bool setHeight(BodyMetrics& target, std::string_view text) noexcept;
+bool setHeight(double& target, std::string_view text) noexcept;
 
 [[nodiscard]] std::optional<double> setMass(std::string_view text) noexcept;
 

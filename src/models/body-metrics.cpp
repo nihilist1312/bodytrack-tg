@@ -6,6 +6,14 @@
 #include <optional>
 #include <regex>
 
+namespace {
+    constexpr double MIN_MASS = 0.;
+    constexpr double MAX_MASS = 300.;
+    constexpr double MIN_HEIGHT = 150.;
+    constexpr double MAX_HEIGHT = 250.;
+    constexpr int MIN_YEAR = 2000;
+} // namespace
+
 [[nodiscard]] double fatPercentage(const BodyMetrics& metric) noexcept {
     return metric.fat_mass / metric.weight * 100;
 }
@@ -17,7 +25,7 @@ bool setDate(BodyMetrics& target, const std::string& text) {
         int year = strToInt(match[1].str()).value();
         int month = strToInt(match[2].str()).value();
         int day = strToInt(match[3].str()).value();
-        if (year >= 2000 && getCurrentYear() >= year &&
+        if (year >= MIN_YEAR && getCurrentYear() >= year &&
             isDateCorrect(year, month, day)) {
             target.date = text;
             return true;
@@ -33,7 +41,7 @@ bool setMass(double& target, std::string_view text) noexcept {
     if (!res)
         return false;
     // ошибка в значении
-    if (res <= 0. || res > 500.)
+    if (res <= MIN_MASS || res > MAX_MASS)
         return false;
     target = res.value();
     return true;
@@ -46,20 +54,20 @@ std::optional<double> setMass(std::string_view text) noexcept {
     if (!res)
         return std::nullopt;
     // ошибка в значении
-    if (res <= 0. || res > 500.)
+    if (res <= MIN_MASS || res > MAX_MASS)
         return std::nullopt;
 
     return res;
 }
 
-bool setHeight(BodyMetrics& target, std::string_view text) noexcept {
+bool setHeight(double& target, std::string_view text) noexcept {
     std::optional<double> res = strToDouble(text);
     if (!res)
         return false;
     // ошибка в значении
-    if (res <= 150. || res > 250.)
+    if (res <= MIN_HEIGHT || res > MAX_HEIGHT)
         return false;
-    target.height = res.value();
+    target = res.value();
     return true;
 }
 

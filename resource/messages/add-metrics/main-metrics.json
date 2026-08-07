@@ -39,7 +39,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -50,7 +50,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -65,7 +65,7 @@
                 },
                 {
                     "text": "📅 Ввести другую дату",
-                    "callback": "add_metric:change_date"
+                    "callback": "add_metric:date_change"
                 }
             ],
             [
@@ -149,7 +149,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -160,7 +160,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -227,7 +227,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -238,7 +238,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -305,7 +305,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -316,7 +316,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -383,7 +383,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]
@@ -394,7 +394,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:main_metric_edit"
+                    "callback": "add_metric:edit_main"
                 }
             ]
         ]

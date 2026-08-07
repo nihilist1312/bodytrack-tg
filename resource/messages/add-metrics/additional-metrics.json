@@ -87,7 +87,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -98,7 +98,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -115,7 +115,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -132,7 +132,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -149,7 +149,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -166,7 +166,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -177,7 +177,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -188,7 +188,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -205,7 +205,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -222,7 +222,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -239,7 +239,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -256,7 +256,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -267,7 +267,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -278,7 +278,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -295,7 +295,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -312,7 +312,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -329,7 +329,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -346,7 +346,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -357,7 +357,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -368,7 +368,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -385,7 +385,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -402,7 +402,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -419,7 +419,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]
@@ -436,7 +436,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "add_metric:additional"
+                    "callback": "add_metric:select_additional"
                 }
             ]
         ]

@@ -3,6 +3,7 @@
 #include "database/database.hpp"
 #include "models/body-metrics.hpp"
 #include "models/user-data.hpp"
+#include "types/input-mode.hpp"
 #include "types/message-template.hpp"
 #include "types/user-states.hpp"
 
@@ -37,6 +38,8 @@ struct UserSession {
     // 2. message_handler: при вводе данных {data} || {null}
     // 3. callback_handler: при выборе сегментных мышц/жира {body_metrics_draft.segment_*}
     std::optional<SegmentMass> segment_mass_draft;
+
+    InputMode input_mode = InputMode::Creating;
 
     int64_t chat_id = 0;
     int32_t last_message_id = 0;
