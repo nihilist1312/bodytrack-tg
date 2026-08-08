@@ -40,5 +40,30 @@
                 }
             ]
         ]
+    },
+    "history_record": {
+        "text": "📋 Запись от {}\n\n⚖️ Вес: {} кг\n📏 Рост: {} см\n💪 Мышечная масса: {} кг\n🔥 Жировая масса: {} кг\n\n{}",
+        "buttons": [
+            [
+                {
+                    "text": "✏️ Основные данные",
+                    "callback": "add_metric:edit_main"
+                },
+                {
+                    "text": "➕ Дополнительные данные",
+                    "callback": "add_metric:select_additional"
+                }
+            ],
+            [
+                {
+                    "text": "⬅️ К истории",
+                    "callback": "back"
+                },
+                {
+                    "text": "🗑️ Удалить запись",
+                    "callback": "history:delete"
+                }
+            ]
+        ]
     }
 }

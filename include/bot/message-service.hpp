@@ -34,20 +34,24 @@ class MessageService {
     void deleteMessage(int64_t chat_id, int32_t message_id);
     void deleteLast(UserSession& session);
 
-    // message printer
+    // ----------------------------------------------------
+    //                 Заготовки сообщений                |
+    // ----------------------------------------------------
     void registration(UserSession& session);
     void openMainMenu(UserSession& session);
     void addRecord(UserSession& session);
 
-    // ---- Ввод пользовательских данных --------------------------------------
+    // ---- Ввод пользовательских данных ------------------
     void requestName(UserSession& session);
     void requestSex(UserSession& session);
     void requestAge(UserSession& session);
 
     void requestDate(UserSession& session);
     void invalidDate(UserSession& session);
-    void doublicateDate(UserSession& session);
-    void doublicateDateEdit(UserSession& session);
+    void douplicateDate(UserSession& session);
+    void douplicateDateEdit(UserSession& session);
+
+    // ---- Запрос основных метрик ------------------------
 
     void requestWeight(UserSession& session);
     void requestHeight(UserSession& session);
@@ -65,6 +69,8 @@ class MessageService {
     // выбор ОСНОВНОЙ метрики для редактирования
     void selectMain(UserSession& session);
 
+    // ---- Запрос доп метрик -----------------------------
+
     // выбор доп метрики для редактирования
     void selectAdditional(UserSession& session);
 
@@ -81,6 +87,8 @@ class MessageService {
     void invalidProteinMass(UserSession& session);
     void invalidMuscleSegment(UserSession& session);
     void invalidFatSegment(UserSession& session);
+
+    // ---- Запрос сегментов ------------------------------
 
     void requestLeftArmMuscle(UserSession& session);
     void requestRightArmMuscle(UserSession& session);
@@ -109,7 +117,10 @@ class MessageService {
     void cannotSaveMuscleSegments(UserSession& session);
     void cannotSaveFatSegments(UserSession& session);
 
+    // ---- История ---------------------------------------
     void historyScreen(UserSession& session);
+
+    void historyRecord(UserSession& session);
 
   private:
     TgBot::Bot& bot_;

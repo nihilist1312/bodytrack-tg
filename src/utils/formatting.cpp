@@ -21,6 +21,21 @@ namespace {
     auto toPlaceholder = [](const auto& opt) -> PlaceholderValue {
         return opt ? PlaceholderValue(*opt) : PlaceholderValue("-");
     };
+
+    // получить число из year, month, day
+    std::string toString(std::chrono::year value) {
+        return std::to_string(int(value));
+    }
+
+    std::string toString(std::chrono::month value) {
+        unsigned month = static_cast<unsigned>(value);
+        return ((month < 10) ? "0" : "") + std::to_string(month);
+    }
+
+    std::string toString(std::chrono::day value) {
+        unsigned day = static_cast<unsigned>(value);
+        return ((day < 10) ? "0" : "") + std::to_string(day);
+    }
 } // namespace
 
 void formatInplace(std::string& text,
@@ -90,7 +105,7 @@ additionalPlaceholders(const BodyMetrics& metric) noexcept {
 [[nodiscard]] std::string
 additionalMetricsText(const BodyMetrics& metric) noexcept {
     // ------------------------ Шаблоны записей -------------------------------
-    static constexpr auto header = "💧 Дополнительные показатели\n\n";
+    static constexpr auto header = "💬 Дополнительные показатели\n\n";
 
     static constexpr auto water_mass = "💧 Вода: {} кг\n";
     static constexpr auto bone_mass = "🦴 Костная масса: {} кг\n";
@@ -126,4 +141,9 @@ additionalMetricsText(const BodyMetrics& metric) noexcept {
     }
 
     return res;
+}
+
+[[nodiscard]] std::string dateToString(Date date) noexcept {
+    return toString(date.year()) + "-" + toString(date.month()) + "-" +
+           toString(date.day());
 }

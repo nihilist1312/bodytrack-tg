@@ -70,65 +70,60 @@ UserData getUserDataFromRow(const SQLite::Statement& query) {
 }
 
 void bindBodyMetricsToStatement(SQLite::Statement& query,
-                                const BodyMetrics& body_metrics) {
-    query.bind(1, body_metrics.user_id);
-    query.bind(2, body_metrics.date);
-    query.bind(3, body_metrics.weight);
-    query.bind(4, body_metrics.height);
-    query.bind(5, body_metrics.age);
-    query.bind(6, body_metrics.muscle_mass);
-    query.bind(7, body_metrics.fat_mass);
+                                const BodyMetrics& body_metrics,
+                                int first_index = 1) {
+    int i = first_index;
 
-    if (body_metrics.water_mass.has_value()) {
-        query.bind(8, body_metrics.water_mass.value());
-    } else {
-        query.bind(8); // bind NULL
-    }
+    query.bind(i++, body_metrics.weight);
+    query.bind(i++, body_metrics.height);
+    query.bind(i++, body_metrics.age);
+    query.bind(i++, body_metrics.muscle_mass);
+    query.bind(i++, body_metrics.fat_mass);
 
-    if (body_metrics.bone_mass.has_value()) {
-        query.bind(9, body_metrics.bone_mass.value());
-    } else {
-        query.bind(9); // bind NULL
-    }
+    if (body_metrics.water_mass.has_value())
+        query.bind(i++, *body_metrics.water_mass);
+    else
+        query.bind(i++);
 
-    if (body_metrics.visceral_fat.has_value()) {
-        query.bind(10, static_cast<int>(body_metrics.visceral_fat.value()));
-    } else {
-        query.bind(10); // bind NULL
-    }
+    if (body_metrics.bone_mass.has_value())
+        query.bind(i++, *body_metrics.bone_mass);
+    else
+        query.bind(i++);
 
-    if (body_metrics.protein_mass.has_value()) {
-        query.bind(11, body_metrics.protein_mass.value());
-    } else {
-        query.bind(11); // bind NULL
-    }
+    if (body_metrics.visceral_fat.has_value())
+        query.bind(i++, static_cast<int>(*body_metrics.visceral_fat));
+    else
+        query.bind(i++);
+
+    if (body_metrics.protein_mass.has_value())
+        query.bind(i++, *body_metrics.protein_mass);
+    else
+        query.bind(i++);
 
     if (body_metrics.segment_muscle_mass.has_value()) {
-        const SegmentMass& muscleSegments =
-            body_metrics.segment_muscle_mass.value();
-        query.bind(12, muscleSegments.left_arm.value());
-        query.bind(13, muscleSegments.right_arm.value());
-        query.bind(14, muscleSegments.left_leg.value());
-        query.bind(15, muscleSegments.right_leg.value());
-        query.bind(16, muscleSegments.trunk.value());
+        const auto& segments = *body_metrics.segment_muscle_mass;
+
+        query.bind(i++, segments.left_arm.value());
+        query.bind(i++, segments.right_arm.value());
+        query.bind(i++, segments.left_leg.value());
+        query.bind(i++, segments.right_leg.value());
+        query.bind(i++, segments.trunk.value());
     } else {
-        for (int i = 12; i <= 16; ++i) {
-            query.bind(i); // bind NULL
-        }
+        for (int j = 0; j < 5; ++j)
+            query.bind(i++);
     }
 
     if (body_metrics.segment_fat_mass.has_value()) {
-        const SegmentMass& segment_fat_mass =
-            body_metrics.segment_fat_mass.value();
-        query.bind(17, segment_fat_mass.left_arm.value());
-        query.bind(18, segment_fat_mass.right_arm.value());
-        query.bind(19, segment_fat_mass.left_leg.value());
-        query.bind(20, segment_fat_mass.right_leg.value());
-        query.bind(21, segment_fat_mass.trunk.value());
+        const auto& segments = *body_metrics.segment_fat_mass;
+
+        query.bind(i++, segments.left_arm.value());
+        query.bind(i++, segments.right_arm.value());
+        query.bind(i++, segments.left_leg.value());
+        query.bind(i++, segments.right_leg.value());
+        query.bind(i++, segments.trunk.value());
     } else {
-        for (int i = 17; i <= 21; ++i) {
-            query.bind(i); // bind NULL
-        }
+        for (int j = 0; j < 5; ++j)
+            query.bind(i++);
     }
 }
 
@@ -274,7 +269,10 @@ bool Database::addBodyMetrics(const BodyMetrics& body_metrics) {
     spdlog::debug("Database. Add metric with user {}, date {}",
                   body_metrics.user_id, body_metrics.date);
     SQLite::Statement query(db, SQLQuery::addBodyMetrics);
-    bindBodyMetricsToStatement(query, body_metrics);
+    query.bind(1, body_metrics.user_id);
+    query.bind(2, body_metrics.date);
+
+    bindBodyMetricsToStatement(query, body_metrics, 3);
     query.exec();
 
     if (db.getChanges() == 0) {
@@ -305,8 +303,9 @@ bool Database::editBodyMetricsById(int64_t id,
                                    const BodyMetrics& body_metrics) {
     spdlog::debug("Database. Edit Metric by id {}", id);
     SQLite::Statement query(db, SQLQuery::editBodyMetricsById);
-    bindBodyMetricsToStatement(query, body_metrics);
-    query.bind(22, id); // Bind the ID for the WHERE clause
+    query.bind(1, body_metrics.date);
+    bindBodyMetricsToStatement(query, body_metrics, 2);
+    query.bind(21, id);
     query.exec();
 
     if (db.getChanges() == 0) {
@@ -322,9 +321,9 @@ bool Database::editBodyMetricsByUserIdAndDate(int64_t user_id,
     spdlog::debug("Database. Edit Metric by User ID {} and Date {}", user_id,
                   date);
     SQLite::Statement query(db, SQLQuery::editBodyMetricsByUserIdAndDate);
-    bindBodyMetricsToStatement(query, body_metrics);
-    query.bind(22, user_id); // Bind the user_id for the WHERE clause
-    query.bind(23, date);    // Bind the date for the WHERE clause
+    bindBodyMetricsToStatement(query, body_metrics, 1);
+    query.bind(20, body_metrics.user_id);
+    query.bind(21, body_metrics.date);
     query.exec();
 
     if (db.getChanges() == 0) {

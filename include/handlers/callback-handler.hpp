@@ -5,6 +5,7 @@
 #include "database/database.hpp"
 
 #include <tgbot/tgbot.h>
+#include <tgbot/types/CallbackQuery.h>
 
 class CallbackHandler {
   public:
@@ -23,6 +24,7 @@ class CallbackHandler {
     void onRegistration(const TgBot::CallbackQuery::Ptr& query);
     void onMainMenu(const TgBot::CallbackQuery::Ptr& query);
     void onAddMetric(const TgBot::CallbackQuery::Ptr& query);
+    void onHistory(const TgBot::CallbackQuery::Ptr& query);
     // go to main menu from any state
     void onCancel(const TgBot::CallbackQuery::Ptr& query);
     void onBack(const TgBot::CallbackQuery::Ptr& query);

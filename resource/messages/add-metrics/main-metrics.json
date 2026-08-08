@@ -61,7 +61,7 @@
             [
                 {
                     "text": "✏️ Изменить существующую",
-                    "callback": "edit_metric:{}"
+                    "callback": "history:view:{}"
                 },
                 {
                     "text": "📅 Ввести другую дату",
@@ -82,7 +82,7 @@
             [
                 {
                     "text": "⬅️ Назад",
-                    "callback": "back"
+                    "callback": "edit_main"
                 }
             ]
         ]

@@ -3,11 +3,15 @@
 #include "bot/message-service.hpp"
 #include "bot/user-session.hpp"
 #include "models/body-metrics.hpp"
+#include "types/input-mode.hpp"
 #include "types/user-states.hpp"
 #include "utils/date.hpp"
+#include "utils/formatting.hpp"
+#include "utils/input_parser.hpp"
 #include "validation/body-metrics-validator.hpp"
 
 #include <array>
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -278,16 +282,17 @@ namespace {
         MessageAction action;
     };
 
-    constexpr std::array<BackEntry, 9> kBackEntries{{
+    constexpr std::array<BackEntry, 10> kBackEntries{{
         {UserStates::InputUserName, &MessageService::registration},
         {UserStates::InputUserAge, &MessageService::requestName},
         {UserStates::InputUserSex, &MessageService::requestAge},
         {UserStates::InputDate, &MessageService::addRecord},
-        {UserStates::DateDublicate, &MessageService::addRecord},
+        {UserStates::DateDuplicate, &MessageService::addRecord},
         {UserStates::InputWeight, &MessageService::requestDate},
         {UserStates::InputHeight, &MessageService::requestWeight},
         {UserStates::InputMuscleMass, &MessageService::requestHeight},
         {UserStates::InputFatMass, &MessageService::requestMuscleMass},
+        {UserStates::HistoryRecord, &MessageService::historyScreen},
     }};
 
     // ---- 9. Ввод основных метрик -------------------------------------------
@@ -324,6 +329,8 @@ void CallbackHandler::handleCallback(const TgBot::CallbackQuery::Ptr& query) {
         onBack(query);
     } else if (query->data.starts_with("cancel")) {
         onCancel(query);
+    } else if (query->data.starts_with("history")) {
+        onHistory(query);
     }
 
     else {
@@ -427,6 +434,8 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         // инициализируем запись с возрастом и user_id
         session.body_metrics_draft = {.user_id = session.user_data->user_id,
                                       .age = session.user_data->age};
+        session.record_mode = UserSession::RecordMode::Add;
+        session.input_mode = InputMode::Creating;
         message_service_.requestDate(session);
         return;
     }
@@ -436,20 +445,20 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         if (!checkState(session, UserStates::InputDate)) {
             return;
         }
-        session.body_metrics_draft.date = getCurrentDate();
+        session.body_metrics_draft->date = getCurrentDateStr();
         // если запись за сегодня уже существует
         if (database_.getBodyMetricsByUserIdAndDate(
-                session.user_data->user_id, session.body_metrics_draft.date)) {
-            message_service_.doublicateDate(session);
+                session.user_data->user_id, session.body_metrics_draft->date)) {
+            message_service_.douplicateDate(session);
             return;
         }
         spdlog::debug("Current date select: {}",
-                      session.body_metrics_draft.date);
+                      session.body_metrics_draft->date);
         message_service_.requestWeight(session);
         return;
     }
     if (data.ends_with("date_change")) {
-        if (!checkState(session, UserStates::DateDublicate)) {
+        if (!checkState(session, UserStates::DateDuplicate)) {
             return;
         }
         message_service_.requestDate(session);
@@ -475,7 +484,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
         double value = session.last_body_metrics.value().*entry.field;
-        session.body_metrics_draft.*entry.field = value;
+        session.body_metrics_draft.value().*entry.field = value;
         spdlog::debug("Use previous {}: {}", entry.log_label, value);
         (message_service_.*entry.next_step)(session);
         return;
@@ -488,15 +497,15 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             spdlog::debug("Incorrect collback");
             return;
         }
-        database_.addBodyMetrics(session.body_metrics_draft);
+        database_.addBodyMetrics(*session.body_metrics_draft);
         message_service_.openMainMenu(session);
         return;
     }
     if (data.ends_with("select_additional")) {
         // вызывать можно только из сводки и ввода доп метрик
-        if (session.current_state < UserStates::MetricSummary ||
-            session.current_state > UserStates::InputFatSegments) {
-            spdlog::debug("Incorrect callback");
+        if (!checkState(session, UserStates::MetricSummary,
+                        UserStates::InputFatSegments) &&
+            !checkState(session, UserStates::HistoryRecord)) {
             return;
         }
         message_service_.selectAdditional(session);
@@ -506,9 +515,9 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         if (session.current_state == UserStates::InputMuscleSegments) {
             if (allSegmetsFilled(session.segment_mass_draft) &&
                 validateSegmentMass(*session.segment_mass_draft,
-                                    session.body_metrics_draft.weight)) {
+                                    session.body_metrics_draft->weight)) {
                 spdlog::debug("Muscle segments save");
-                session.body_metrics_draft.segment_muscle_mass =
+                session.body_metrics_draft->segment_muscle_mass =
                     session.segment_mass_draft;
             } else {
                 message_service_.cannotSaveMuscleSegments(session);
@@ -517,9 +526,9 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         } else if (session.current_state == UserStates::InputFatSegments) {
             if (allSegmetsFilled(session.segment_mass_draft) &&
                 validateSegmentMass(*session.segment_mass_draft,
-                                    session.body_metrics_draft.fat_mass)) {
+                                    session.body_metrics_draft->fat_mass)) {
                 spdlog::debug("Fat segments save");
-                session.body_metrics_draft.segment_fat_mass =
+                session.body_metrics_draft->segment_fat_mass =
                     session.segment_mass_draft;
             } else {
                 message_service_.cannotSaveFatSegments(session);
@@ -535,7 +544,8 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
     }
     if (data.ends_with("edit_main")) {
         if (!checkState(session, UserStates::InputDate,
-                        UserStates::MetricSummary)) {
+                        UserStates::MetricSummary) &&
+            !checkState(session, UserStates::HistoryRecord)) {
             return;
         }
         message_service_.selectMain(session);
@@ -545,14 +555,27 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         if (!checkState(session, UserStates::SelectAdditionalMetrics)) {
             return;
         }
-        message_service_.printSummary(session);
+        if (session.record_mode == UserSession::RecordMode::Add)
+            message_service_.printSummary(session);
+        else {
+            database_.editBodyMetricsById(session.body_metrics_draft->id,
+                                          *session.body_metrics_draft);
+            message_service_.historyRecord(session);
+        }
         return;
     }
     if (data.ends_with("save_metric")) {
         if (!checkState(session, UserStates::SelectMainMetrics)) {
             return;
         }
-        message_service_.printSummary(session);
+        if (session.record_mode == UserSession::RecordMode::Add)
+            message_service_.printSummary(session);
+        // Сохраняем изменения в БД
+        else {
+            database_.editBodyMetricsById(session.body_metrics_draft->id,
+                                          *session.body_metrics_draft);
+            message_service_.historyRecord(session);
+        }
         return;
     }
 
@@ -573,7 +596,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         // инициализируем черновик
         if (!session.segment_mass_draft)
             session.segment_mass_draft =
-                session.body_metrics_draft.segment_muscle_mass;
+                session.body_metrics_draft->segment_muscle_mass;
         // if (!session.segment_mass_draft)
         //     session.segment_mass_draft.emplace();
         message_service_.requestMuscleSegment(session);
@@ -588,7 +611,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
         // инициализируем черновик
         if (!session.segment_mass_draft)
             session.segment_mass_draft =
-                session.body_metrics_draft.segment_fat_mass;
+                session.body_metrics_draft->segment_fat_mass;
         // if (!session.segment_mass_draft)
         //     session.segment_mass_draft.emplace();
         message_service_.requestFatSegment(session);
@@ -607,7 +630,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
         double value = (session.last_body_metrics.value().*entry.field).value();
-        session.body_metrics_draft.*entry.field = value;
+        session.body_metrics_draft.value().*entry.field = value;
         spdlog::debug("Using previous {}: {}", entry.log_label, value);
         message_service_.selectAdditional(session);
         return;
@@ -621,7 +644,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             return;
         }
         int value = session.last_body_metrics->visceral_fat.value();
-        session.body_metrics_draft.visceral_fat = value;
+        session.body_metrics_draft->visceral_fat = value;
         spdlog::debug("Using previous visceral fat: {}", value);
         message_service_.selectAdditional(session);
         return;
@@ -633,7 +656,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
                                 exists)) {
             return;
         }
-        session.body_metrics_draft.segment_muscle_mass =
+        session.body_metrics_draft->segment_muscle_mass =
             session.last_body_metrics->segment_muscle_mass;
         spdlog::debug("Using previous muscle segment");
         message_service_.selectAdditional(session);
@@ -646,7 +669,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
                                 exists)) {
             return;
         }
-        session.body_metrics_draft.segment_fat_mass =
+        session.body_metrics_draft->segment_fat_mass =
             session.last_body_metrics->segment_fat_mass;
         spdlog::debug("Using previous fat segments");
         message_service_.selectAdditional(session);
@@ -659,20 +682,21 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
             continue;
         }
         if (!checkStateAndExist(session, entry.state,
-                                session.body_metrics_draft.*entry.field)) {
+                                session.body_metrics_draft.value().*
+                                    entry.field)) {
             return;
         }
-        session.body_metrics_draft.*entry.field = std::nullopt;
+        session.body_metrics_draft.value().*entry.field = std::nullopt;
         spdlog::debug("Delete {}", entry.log_label);
         message_service_.selectAdditional(session);
         return;
     }
     if (data.ends_with("visceral_fat_delete")) {
         if (!checkStateAndExist(session, UserStates::InputVisceralFat,
-                                session.body_metrics_draft.visceral_fat)) {
+                                session.body_metrics_draft->visceral_fat)) {
             return;
         }
-        session.body_metrics_draft.visceral_fat = std::nullopt;
+        session.body_metrics_draft->visceral_fat = std::nullopt;
         spdlog::debug("Delete visceral fat");
         message_service_.selectAdditional(session);
         return;
@@ -682,7 +706,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
                                 session.segment_mass_draft)) {
             return;
         }
-        session.body_metrics_draft.segment_muscle_mass = std::nullopt;
+        session.body_metrics_draft->segment_muscle_mass = std::nullopt;
         spdlog::debug("Delete segment muscle mass");
         message_service_.selectAdditional(session);
         return;
@@ -692,7 +716,7 @@ void CallbackHandler::onAddMetric(const TgBot::CallbackQuery::Ptr& query) {
                                 session.segment_mass_draft)) {
             return;
         }
-        session.body_metrics_draft.segment_fat_mass = std::nullopt;
+        session.body_metrics_draft->segment_fat_mass = std::nullopt;
         spdlog::debug("Delete segment fat mass");
         message_service_.selectAdditional(session);
         return;
@@ -752,10 +776,81 @@ void CallbackHandler::onBack(const TgBot::CallbackQuery::Ptr& query) {
 void CallbackHandler::onCancel(const TgBot::CallbackQuery::Ptr& query) {
     UserSession& session = session_manager_.getSession(query);
 
-    if (!checkState(session, {UserStates::AddMetricSelectMode,
-                              UserStates::HistoryPage})) {
+    if (!checkState(session,
+                    {UserStates::AddMetricSelectMode, UserStates::HistoryScreen,
+                     UserStates::MetricSummary})) {
         return;
     }
 
     message_service_.openMainMenu(session);
+}
+
+void CallbackHandler::onHistory(const TgBot::CallbackQuery::Ptr& query) {
+    UserSession& session = session_manager_.getSession(query);
+    const std::string& data = query->data;
+
+    if (data.starts_with("history:view:")) {
+        if (!checkState(session, UserStates::HistoryScreen)) {
+            return;
+        }
+
+        // получение даты
+        static constexpr size_t pos_start =
+            std::string_view("history:view:").size();
+        auto date = getDate(data.substr(pos_start));
+        if (!date) {
+            spdlog::debug("Incorrect callback");
+            return;
+        }
+
+        auto record = database_.getBodyMetricsByUserIdAndDate(
+            session.user_data->user_id, dateToString(*date));
+        if (!record) {
+            spdlog::debug("Incorrect callback");
+            return;
+        }
+        session.body_metrics_draft = std::move(*record);
+        session.record_mode = UserSession::RecordMode::Edit;
+        message_service_.historyRecord(session);
+        return;
+    } else if (data.ends_with("delete")) {
+        if (!checkState(session, UserStates::HistoryRecord)) {
+            return;
+        }
+        if (!database_.deleteBodyMetricsById(session.body_metrics_draft->id)) {
+            spdlog::warn("Cannot delete metric with id {}",
+                         session.body_metrics_draft->id);
+            return;
+        }
+        message_service_.historyScreen(session);
+        return;
+    } else if (data.ends_with("next")) {
+        if (!checkState(session, UserStates::HistoryScreen)) {
+            return;
+        }
+        auto record_num =
+            database_.getBodyMetricsCount(session.user_data->user_id);
+        if ((session.history_offset + 1) * 10 >= record_num) {
+            spdlog::debug("Last page");
+            return;
+        }
+
+        ++session.history_offset;
+        message_service_.historyScreen(session);
+    } else if (data.ends_with("previous")) {
+        if (!checkState(session, UserStates::HistoryScreen)) {
+            return;
+        }
+
+        if (session.history_offset == 0) {
+            spdlog::debug("First page");
+            return;
+        }
+
+        --session.history_offset;
+        message_service_.historyScreen(session);
+    } else {
+        spdlog::debug("Incorrect callback");
+        return;
+    }
 }

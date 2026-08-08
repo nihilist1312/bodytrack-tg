@@ -2,9 +2,11 @@
 
 #include "utils/conversions.hpp"
 #include "utils/date.hpp"
+#include "utils/formatting.hpp"
+#include "utils/input_parser.hpp"
 
+#include <chrono>
 #include <optional>
-#include <regex>
 
 namespace {
     constexpr double MIN_MASS = 0.;
@@ -19,19 +21,14 @@ namespace {
 }
 
 bool setDate(BodyMetrics& target, const std::string& text) {
-    static std::regex pat{R"((20\d{2})-(\d{2})-(\d{2}))"};
-    std::smatch match;
-    if (std::regex_match(text, match, pat)) {
-        int year = strToInt(match[1].str()).value();
-        int month = strToInt(match[2].str()).value();
-        int day = strToInt(match[3].str()).value();
-        if (year >= MIN_YEAR && getCurrentYear() >= year &&
-            isDateCorrect(year, month, day)) {
-            target.date = text;
-            return true;
-        }
-    }
-    return false;
+    static constexpr std::chrono::year min_year{2000};
+    auto date = getDate(text);
+    if (!date)
+        return false;
+    if (date->year() < min_year || date > getCurrentDate())
+        return false;
+    target.date = dateToString(*date);
+    return true;
 }
 
 // чтобы не писать под каждое поле использую общее Mass(double&)

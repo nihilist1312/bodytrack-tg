@@ -87,6 +87,7 @@ INSERT OR IGNORE INTO body_metrics (
         "UPDATE users SET user_name = ?, age = ?, sex = ? WHERE user_id = ?;";
     constexpr auto editBodyMetricsById = R"(
 UPDATE body_metrics SET
+    date = ?,
     weight = ?, height = ?, age = ?, muscle_mass = ?, body_fat_mass = ?,
     water_mass = ?, bone_mass = ?, visceral_fat = ?, protein_mass = ?,
     muscle_left_arm = ?, muscle_right_arm = ?, muscle_left_leg = ?, muscle_right_leg = ?, muscle_trunk = ?,

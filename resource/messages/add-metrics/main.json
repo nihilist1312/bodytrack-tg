@@ -27,9 +27,7 @@
                 {
                     "text": "✏️ Основные данные",
                     "callback": "add_metric:edit_main"
-                }
-            ],
-            [
+                },
                 {
                     "text": "➕ Дополнительные данные",
                     "callback": "add_metric:select_additional"
@@ -37,14 +35,12 @@
             ],
             [
                 {
-                    "text": "💾 Сохранить запись",
-                    "callback": "add_metric:save"
-                }
-            ],
-            [
-                {
                     "text": "❌ Удалить запись",
                     "callback": "cancel"
+                },
+                {
+                    "text": "💾 Сохранить запись",
+                    "callback": "add_metric:save"
                 }
             ]
         ]

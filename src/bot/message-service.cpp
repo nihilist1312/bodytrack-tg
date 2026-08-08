@@ -47,7 +47,7 @@ MessageService::loadMessage(const MessageTemplate& message_template) {
                     btn_text,
                     message_template.buttons_text_placeholders[idx_btn]);
             }
-            spdlog::debug("Button {} text: {}", idx_btn, btn_text);
+            // spdlog::debug("Button {} text: {}", idx_btn, btn_text);
             std::string btn_data = button_json["callback"];
             if (idx_btn < message_template.buttons_data_placeholders.size() &&
                 !message_template.buttons_data_placeholders[idx_btn].empty()) {
@@ -55,7 +55,7 @@ MessageService::loadMessage(const MessageTemplate& message_template) {
                     btn_data,
                     message_template.buttons_data_placeholders[idx_btn]);
             }
-            spdlog::debug("Button {} data: {}", idx_btn, btn_data);
+            // spdlog::debug("Button {} data: {}", idx_btn, btn_data);
             button_ptr->text = std::move(btn_text);
             button_ptr->callbackData = std::move(btn_data);
             buttons_row.push_back(std::move(button_ptr));
@@ -164,7 +164,7 @@ void MessageService::openMainMenu(UserSession& session) {
         spdlog::debug("Open without data");
         editMessage(session, {"empty_menu"});
     }
-    session.body_metrics_draft = {};
+    session.body_metrics_draft = std::nullopt;
     session.segment_mass_draft = std::nullopt;
     session.history_offset = 0;
     session.current_state = UserStates::MainMenu;
@@ -173,13 +173,13 @@ void MessageService::openMainMenu(UserSession& session) {
 // ---- Ввод даты -------------------------------------------------------------
 void MessageService::requestDate(UserSession& session) {
     spdlog::debug("Request date");
-    if (session.body_metrics_draft.date != "") {
+    if (session.input_mode == InputMode::Editing) {
         spdlog::debug("Edit version");
         editMessage(session,
-                    {"request_date_edit", {session.body_metrics_draft.date}});
+                    {"request_date_edit", {session.body_metrics_draft->date}});
     } else {
         spdlog::debug("Default version");
-        editMessage(session, {"request_date", {}, {{getCurrentDate()}}});
+        editMessage(session, {"request_date", {}, {{getCurrentDateStr()}}});
     }
 
     session.current_state = UserStates::InputDate;
@@ -187,31 +187,31 @@ void MessageService::requestDate(UserSession& session) {
 
 void MessageService::invalidDate(UserSession& session) {
     spdlog::debug("Invalid date");
-    if (session.body_metrics_draft.date != "") {
+    if (session.body_metrics_draft->date != "") {
         spdlog::debug("Edit version");
         editMessage(session,
-                    {"invalid_date_edit", {session.body_metrics_draft.date}});
+                    {"invalid_date_edit", {session.body_metrics_draft->date}});
     } else {
         spdlog::debug("Default version");
-        editMessage(session, {"invalid_date", {}, {{getCurrentDate()}}});
+        editMessage(session, {"invalid_date", {}, {{getCurrentDateStr()}}});
     }
 
     session.current_state = UserStates::InputDate;
 }
 
-void MessageService::doublicateDate(UserSession& sessions) {
-    spdlog::debug("Dublicate date");
-    editMessage(sessions, {"dublicate_date",
-                           {sessions.body_metrics_draft.date},
+void MessageService::douplicateDate(UserSession& sessions) {
+    spdlog::debug("Duplicate date");
+    editMessage(sessions, {"duplicate_date",
+                           {sessions.body_metrics_draft->date},
                            {},
-                           {{sessions.body_metrics_draft.date}}});
-    sessions.current_state = UserStates::DateDublicate;
+                           {{sessions.body_metrics_draft->date}}});
+    sessions.current_state = UserStates::DateDuplicate;
 }
 
-void MessageService::doublicateDateEdit(UserSession& session) {
-    spdlog::debug("Dublicate date. Edit");
+void MessageService::douplicateDateEdit(UserSession& session) {
+    spdlog::debug("Duplicate date. Edit");
     editMessage(session,
-                {"duplicate_date_edit", {session.body_metrics_draft.date}});
+                {"duplicate_date_edit", {session.body_metrics_draft->date}});
     session.current_state = UserStates::InputDate;
 }
 
@@ -226,8 +226,8 @@ void MessageService::requestMetric(UserSession& session,
     spdlog::debug("{} {}", op_label, metric_label);
     if (session.input_mode == InputMode::Editing) {
         spdlog::debug("Edit version");
-        editMessage(session,
-                    {base_key + "_edit", {session.body_metrics_draft.*field}});
+        editMessage(session, {base_key + "_edit",
+                              {session.body_metrics_draft.value().*field}});
     } else if (session.last_body_metrics) {
         spdlog::debug("Previous version");
         editMessage(session, {base_key + "_previous",
@@ -284,24 +284,25 @@ void MessageService::invalidFatMass(UserSession& session) {
 
 // dev
 void MessageService::printSummary(UserSession& session) {
-    editMessage(session, {"save_metric",
-                          {session.body_metrics_draft.date,
-                           session.body_metrics_draft.weight,
-                           session.body_metrics_draft.height,
-                           session.body_metrics_draft.muscle_mass,
-                           session.body_metrics_draft.fat_mass,
-                           additionalMetricsText(session.body_metrics_draft)}});
+    editMessage(
+        session,
+        {"save_metric",
+         {session.body_metrics_draft->date, session.body_metrics_draft->weight,
+          session.body_metrics_draft->height,
+          session.body_metrics_draft->muscle_mass,
+          session.body_metrics_draft->fat_mass,
+          additionalMetricsText(*session.body_metrics_draft)}});
     session.current_state = UserStates::MetricSummary;
 }
 
 void MessageService::selectMain(UserSession& session) {
     spdlog::debug("Select main metrics");
     editMessage(session, {"select_main_metrics",
-                          {session.body_metrics_draft.date,
-                           session.body_metrics_draft.weight,
-                           session.body_metrics_draft.height,
-                           session.body_metrics_draft.muscle_mass,
-                           session.body_metrics_draft.fat_mass}});
+                          {session.body_metrics_draft->date,
+                           session.body_metrics_draft->weight,
+                           session.body_metrics_draft->height,
+                           session.body_metrics_draft->muscle_mass,
+                           session.body_metrics_draft->fat_mass}});
     // Переводим ввод в режим редактирования
     session.input_mode = InputMode::Editing;
     session.current_state = UserStates::SelectMainMetrics;
@@ -309,12 +310,12 @@ void MessageService::selectMain(UserSession& session) {
 
 void MessageService::selectAdditional(UserSession& session) {
     spdlog::debug("Select additional metrics");
-    if (haveAdditional(session.body_metrics_draft)) {
+    if (haveAdditional(*session.body_metrics_draft)) {
         spdlog::debug("Addition metrics exist");
         session.segment_mass_draft = std::nullopt;
         editMessage(session,
                     {"additional_metrics",
-                     {additionalPlaceholders(session.body_metrics_draft)}});
+                     {additionalPlaceholders(*session.body_metrics_draft)}});
     }
     // пишем пояснение если ни одна метрика не была введена
     else {
@@ -336,14 +337,15 @@ void MessageService::requestSimpleMetric(UserSession& session,
 
     spdlog::debug("Request {}", log_label);
 
-    if (session.body_metrics_draft.*field) {
+    if (session.body_metrics_draft.value().*field) {
         spdlog::debug("{} edit", log_label);
         if (is_invalid) {
             editMessage(session, {base_message_key + "_edit"});
         } else {
-            editMessage(session,
-                        {base_message_key + "_edit",
-                         {(session.body_metrics_draft.*field).value()}});
+            editMessage(
+                session,
+                {base_message_key + "_edit",
+                 {(session.body_metrics_draft.value().*field).value()}});
         }
     } else if (session.last_body_metrics &&
                session.last_body_metrics.value().*field) {
@@ -503,9 +505,10 @@ void MessageService::requestSegment(
 
     // проверяем что масса сегментов есть, берем указатель на нужный
     // и проверяем определен ли он
-    if (session.body_metrics_draft.*metrics_field &&
+    if (session.body_metrics_draft.value().*metrics_field &&
         (new_value =
-             &((session.body_metrics_draft.*metrics_field).value().*field)) &&
+             &((session.body_metrics_draft.value().*metrics_field).value().*
+               field)) &&
         *new_value) {
         spdlog::debug("{} edit", segment_name);
         editMessage(session, {base_message_key + "_edit",
@@ -528,61 +531,61 @@ void MessageService::requestSegment(
 
 // Обёртки request_*
 void MessageService::requestLeftArmFat(UserSession& session) {
-    requestSegment(session, "Left arm", &BodyMetrics::segment_fat_mass,
+    requestSegment(session, "Левая рука", &BodyMetrics::segment_fat_mass,
                    &SegmentMass::left_arm, UserStates::InputLeftArmFat,
                    "request_segment_fat_mass_value");
 }
 
 void MessageService::requestRightArmFat(UserSession& session) {
-    requestSegment(session, "Right arm", &BodyMetrics::segment_fat_mass,
+    requestSegment(session, "Правая рука", &BodyMetrics::segment_fat_mass,
                    &SegmentMass::right_arm, UserStates::InputRightArmFat,
                    "request_segment_fat_mass_value");
 }
 
 void MessageService::requestLeftLegFat(UserSession& session) {
-    requestSegment(session, "Left leg", &BodyMetrics::segment_fat_mass,
+    requestSegment(session, "Левая нога", &BodyMetrics::segment_fat_mass,
                    &SegmentMass::left_leg, UserStates::InputLeftLegFat,
                    "request_segment_fat_mass_value");
 }
 
 void MessageService::requestRightLegFat(UserSession& session) {
-    requestSegment(session, "Right leg", &BodyMetrics::segment_fat_mass,
+    requestSegment(session, "Правая нога", &BodyMetrics::segment_fat_mass,
                    &SegmentMass::right_leg, UserStates::InputRightLegFat,
                    "request_segment_fat_mass_value");
 }
 
 void MessageService::requestTrunkFat(UserSession& session) {
-    requestSegment(session, "Trunk", &BodyMetrics::segment_fat_mass,
+    requestSegment(session, "Туловище", &BodyMetrics::segment_fat_mass,
                    &SegmentMass::trunk, UserStates::InputTrunkFat,
                    "request_segment_fat_mass_value");
 }
 
 void MessageService::invalidLeftArmMuscle(UserSession& session) {
-    requestSegment(session, "Left arm", &BodyMetrics::segment_muscle_mass,
+    requestSegment(session, "Левая рука", &BodyMetrics::segment_muscle_mass,
                    &SegmentMass::left_arm, UserStates::InputLeftArmMuscle,
                    "invalid_segment_muscle_mass_value");
 }
 
 void MessageService::invalidRightArmMuscle(UserSession& session) {
-    requestSegment(session, "Right arm", &BodyMetrics::segment_muscle_mass,
+    requestSegment(session, "Правая рука", &BodyMetrics::segment_muscle_mass,
                    &SegmentMass::right_arm, UserStates::InputRightArmMuscle,
                    "invalid_segment_muscle_mass_value");
 }
 
 void MessageService::invalidLeftLegMuscle(UserSession& session) {
-    requestSegment(session, "Left leg", &BodyMetrics::segment_muscle_mass,
+    requestSegment(session, "Левая нога", &BodyMetrics::segment_muscle_mass,
                    &SegmentMass::left_leg, UserStates::InputLeftLegMuscle,
                    "invalid_segment_muscle_mass_value");
 }
 
 void MessageService::invalidRightLegMuscle(UserSession& session) {
-    requestSegment(session, "Right leg", &BodyMetrics::segment_muscle_mass,
+    requestSegment(session, "Правая нога", &BodyMetrics::segment_muscle_mass,
                    &SegmentMass::right_leg, UserStates::InputRightLegMuscle,
                    "invalid_segment_muscle_mass_value");
 }
 
 void MessageService::invalidTrunkMuscle(UserSession& session) {
-    requestSegment(session, "Trunk", &BodyMetrics::segment_muscle_mass,
+    requestSegment(session, "Туловище", &BodyMetrics::segment_muscle_mass,
                    &SegmentMass::trunk, UserStates::InputTrunkMuscle,
                    "invalid_segment_muscle_mass_value");
 }
@@ -667,7 +670,7 @@ void MessageService::requestSex(UserSession& session) {
 void MessageService::historyScreen(UserSession& session) {
     static constexpr size_t kPageSize = 10;
     spdlog::debug("History print");
-    session.current_state = UserStates::HistoryPage;
+    session.current_state = UserStates::HistoryScreen;
 
     // ---- Определение шаблонов кнопок ---------------------------------------
     static const auto text_message_temp =
@@ -786,4 +789,15 @@ void MessageService::editMessage(
         spdlog::debug("Edited failed. What: {}. Try send", e.what());
         sendMessage(session, {}, MessageData{text, keyboard});
     }
+}
+
+// Выводит запись из body_metric_draft для редактирования
+void MessageService::historyRecord(UserSession& session) {
+    const auto& record = *session.body_metrics_draft;
+    spdlog::debug("History record: {}", record.date);
+    editMessage(session,
+                {"history_record",
+                 {record.date, record.weight, record.height, record.muscle_mass,
+                  record.fat_mass, additionalMetricsText(record)}});
+    session.current_state = UserStates::HistoryRecord;
 }

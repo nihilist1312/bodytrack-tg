@@ -147,14 +147,17 @@ void MessageHandler::onAge(const TgBot::Message::Ptr& message,
 void MessageHandler::onDate(const TgBot::Message::Ptr& message,
                             UserSession& session) {
     spdlog::debug("Date handle");
-    if (setDate(session.body_metrics_draft, message->text)) {
+    if (setDate(*session.body_metrics_draft, message->text)) {
         // если запись с такой датой уже существует
         if (database_.getBodyMetricsByUserIdAndDate(
-                session.user_data->user_id, session.body_metrics_draft.date)) {
-            message_service_.doublicateDate(session);
+                session.user_data->user_id, session.body_metrics_draft->date)) {
+            if (session.input_mode == InputMode::Creating)
+                message_service_.douplicateDate(session);
+            else
+                message_service_.douplicateDateEdit(session);
             return;
         }
-        spdlog::debug("Set date: {}", session.body_metrics_draft.date);
+        spdlog::debug("Set date: {}", session.body_metrics_draft->date);
         if (session.input_mode == InputMode::Creating)
             message_service_.requestWeight(session);
         else
@@ -173,9 +176,9 @@ void MessageHandler::inputMain(std::string_view message, UserSession& session,
                                ServiceFunc success_edit,
                                ServiceFunc invalid_func) {
     spdlog::debug("{} handle", log_label);
-    if (parser(session.body_metrics_draft.*field, message)) {
+    if (parser(session.body_metrics_draft.value().*field, message)) {
         spdlog::debug("set {}: {}", log_label,
-                      session.body_metrics_draft.*field);
+                      session.body_metrics_draft.value().*field);
         if (session.input_mode == InputMode::Creating) {
             (message_service_.*success_creat)(session);
         } else {
@@ -222,11 +225,11 @@ void MessageHandler::inputAdditional(std::string_view message,
                                      std::optional<T> BodyMetrics::* field,
                                      ServiceFunc invalid_func) {
     spdlog::debug("{} handle", log_label);
-    session.body_metrics_draft.*field = setMass(message);
-    if (session.body_metrics_draft.*field &&
-        validateBodyMetrics(session.body_metrics_draft)) {
+    session.body_metrics_draft.value().*field = setMass(message);
+    if (session.body_metrics_draft.value().*field &&
+        validateBodyMetrics(*session.body_metrics_draft)) {
         spdlog::debug("Set {}: {}", log_label,
-                      *(session.body_metrics_draft.*field));
+                      *(session.body_metrics_draft.value().*field));
         message_service_.selectAdditional(session);
     } else {
         (message_service_.*invalid_func)(session);
@@ -267,9 +270,9 @@ void MessageHandler::onMuscleMassSegments(const TgBot::Message::Ptr& message,
     session.segment_mass_draft = getSegmentsMass(message->text);
     if (session.segment_mass_draft &&
         validateSegmentMass(*session.segment_mass_draft,
-                            session.body_metrics_draft.weight)) {
+                            session.body_metrics_draft->weight)) {
         spdlog::debug("Set muscle segments: {}", message->text);
-        session.body_metrics_draft.segment_muscle_mass =
+        session.body_metrics_draft->segment_muscle_mass =
             session.segment_mass_draft;
         session.segment_mass_draft = std::nullopt;
         message_service_.selectAdditional(session);
@@ -284,9 +287,9 @@ void MessageHandler::onFatMassSegments(const TgBot::Message::Ptr& message,
     session.segment_mass_draft = getSegmentsMass(message->text);
     if (session.segment_mass_draft &&
         validateSegmentMass(*session.segment_mass_draft,
-                            session.body_metrics_draft.fat_mass)) {
+                            session.body_metrics_draft->fat_mass)) {
         spdlog::debug("Set fat segments: {}", message->text);
-        session.body_metrics_draft.segment_fat_mass =
+        session.body_metrics_draft->segment_fat_mass =
             session.segment_mass_draft;
         session.segment_mass_draft = std::nullopt;
         message_service_.selectAdditional(session);
@@ -308,7 +311,7 @@ void MessageHandler::inputSegment(std::string_view message,
     session.segment_mass_draft.value().*field = setMass(message);
     if (session.segment_mass_draft.value().*field &&
         validateSegmentMass(*session.segment_mass_draft,
-                            session.body_metrics_draft.*total_field)) {
+                            session.body_metrics_draft.value().*total_field)) {
         spdlog::debug("Set {} {}: {}", segment_label, groupe_label,
                       *(session.segment_mass_draft.value().*field));
         (message_service_.*success_func)(session);

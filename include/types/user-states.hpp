@@ -1,24 +1,21 @@
 #pragma once
 
 enum class UserStates {
+    // ---- Регистрация -------------------------
     RegistrationNeed,
-
-    // registration
     InputUserName,
     InputUserAge,
     InputUserSex,
 
     MainMenu,
 
-    // adding metrics
+    // ---- Добавление записи -------------------
     AddMetricSelectMode,
-
-    // adding from file
     AddMetricFromFile,
 
-    // input neccessary metrics
+    // ---- Ввод основных значений --------------
     InputDate,
-    DateDublicate,
+    DateDuplicate,
     InputWeight,
     InputHeight,
     InputMuscleMass,
@@ -27,7 +24,7 @@ enum class UserStates {
     MetricSummary,
     SelectMainMetrics,
 
-    // input additional metrics
+    // ---- Ввод доп значений -------------------
     SelectAdditionalMetrics,
     InputWaterMass,
     InputBoneMass,
@@ -36,7 +33,7 @@ enum class UserStates {
     InputMuscleSegments,
     InputFatSegments,
 
-    // input segment value
+    // ---- Ввод сегментов значений -------------
     InputLeftArmMuscle,
     InputRightArmMuscle,
     InputLeftLegMuscle,
@@ -49,6 +46,7 @@ enum class UserStates {
     InputRightLegFat,
     InputTrunkFat,
 
-    // ---- История -----------------------------------------------------------
-    HistoryPage
+    // ---- История -----------------------------
+    HistoryScreen,
+    HistoryRecord,
 };

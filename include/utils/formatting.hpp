@@ -1,6 +1,7 @@
 #pragma once
 
 #include "models/body-metrics.hpp"
+#include "utils/date.hpp"
 
 #include <cstddef>
 #include <string>
@@ -31,3 +32,5 @@ additionalPlaceholders(const BodyMetrics& metric) noexcept;
 // или "" если таковых нет
 [[nodiscard]] std::string
 additionalMetricsText(const BodyMetrics& metric) noexcept;
+
+[[nodiscard]] std::string dateToString(Date date) noexcept;

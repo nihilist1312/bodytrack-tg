@@ -15,6 +15,8 @@
 #include <tgbot/types/CallbackQuery.h>
 
 struct UserSession {
+    enum class RecordMode { Add, Edit };
+
     UserStates current_state = UserStates::MainMenu;
 
     // пользовательские данные, инциализация при создании
@@ -30,20 +32,25 @@ struct UserSession {
     // Инциализация:
     // 1. message_service: при открытии главного меню {}
     // 2. callback_handler: при выборе ручного режима создания записи {user_id, age}
-    BodyMetrics body_metrics_draft;
+    std::optional<BodyMetrics> body_metrics_draft;
 
     // Промежуточный результат изменения сегментной массы
     // Инициализация:
     // 1. message_service: при открытии главного меню и меню выбора ДОП метрики {}
     // 2. message_handler: при вводе данных {data} || {null}
-    // 3. callback_handler: при выборе сегментных мышц/жира {body_metrics_draft.segment_*}
+    // 3. callback_handler: при выборе сегментных мышц/жира {body_metrics_draft->segment_*}
     std::optional<SegmentMass> segment_mass_draft;
 
+    // Редактируем основные метрики или создаём их
     InputMode input_mode = InputMode::Creating;
+
+    // Добавляем новую запись или редактируем существующую
+    RecordMode record_mode = RecordMode::Add;
 
     int64_t chat_id = 0;
     int32_t last_message_id = 0;
     MessageTemplate last_message_template;
+    // смещение по страницам истории, 0 -> 1-10, 1 -> 11-20 и т д
     int history_offset = 0;
 };
 

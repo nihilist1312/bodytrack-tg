@@ -2,7 +2,9 @@
 
 #include "models/body-metrics.hpp"
 
+#include <chrono>
 #include <optional>
+#include <regex>
 #include <sstream>
 #include <string>
 
@@ -59,4 +61,22 @@ getSegmentsMass(const std::string& text) noexcept {
     }
 
     return segments;
+}
+
+Date makeDate(int year, int month, int day) {
+    return Date{std::chrono::year{year},
+                std::chrono::month{static_cast<unsigned>(month)},
+                std::chrono::day{static_cast<unsigned>(day)}};
+}
+
+[[nodiscard]] std::optional<Date> getDate(const std::string& text) noexcept {
+    static std::regex pat{R"((20\d{2})-(\d{2})-(\d{2}))"};
+    std::smatch match;
+    if (std::regex_match(text, match, pat)) {
+        Date date = makeDate(std::stoi(match[1]), std::stoi(match[2]),
+                             std::stoi(match[3]));
+        if (date.ok())
+            return date;
+    }
+    return std::nullopt;
 }
